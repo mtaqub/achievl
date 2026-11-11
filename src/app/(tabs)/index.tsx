@@ -136,6 +136,17 @@ export default function Dashboard() {
         />
       </Panel>
 
+      <Panel title="Forum" icon="forum">
+        <Row
+          icon="message-text"
+          title="Talk to other players"
+          subtitle="Threads on quests, food and streaks."
+          onPress={() => router.push('/forum')}
+          right={<Icon name="chevron-right" size={24} color={colors.textDim} />}
+          accessibilityLabel="Open the forum"
+        />
+      </Panel>
+
       <Panel title="Unlocked today" icon="trophy">
         {unlocked.length === 0 ? (
           <Txt color="dim">Nothing yet. Clear a quest and it shows up here as an achievement.</Txt>
