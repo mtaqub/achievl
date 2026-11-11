@@ -14,6 +14,7 @@ import { ML_PER_FL_OZ } from '@/game/nutrition';
 import { Goals, Units } from '@/game/types';
 import { live } from '@/live';
 import { canChangeAppIcon } from '@/services/appIcon';
+import { useArcade } from '@/store/useArcade';
 import { useGame } from '@/store/useGame';
 import { useTheme } from '@/theme/ThemeProvider';
 
@@ -66,7 +67,12 @@ export default function Settings() {
   const setUnits = useGame((s) => s.setUnits);
   const setMatchIcon = useGame((s) => s.setMatchIcon);
   const setLiveEnabled = useGame((s) => s.setLiveEnabled);
-  const resetAll = useGame((s) => s.resetAll);
+  const resetGame = useGame((s) => s.resetAll);
+  const resetArcade = useArcade((s) => s.resetAll);
+  const resetAll = () => {
+    resetGame();
+    resetArcade();
+  };
   const [name, setName] = useState(data.profile.name);
   const [motto, setMotto] = useState(data.profile.motto);
 

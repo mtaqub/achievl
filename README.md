@@ -3,6 +3,15 @@
 Turn your day into achievements: daily quests, food and water tracking, barcode
 lookup, console-era themes and a Lock Screen tracker. Built with Expo (React Native).
 
+It also has an arcade, paid for by play: crate keys come from achievement points and
+loot boxes from levels and milestones. Crates spin a reel of weapon finishes (real-world
+model names, original finishes); loot boxes hold titles, emblems, banners and stickers.
+The odds are posted on each screen and tested in `src/arcade/__tests__`.
+
+Purchases are designed but not connected: the products are listed in
+`src/arcade/premium.ts`, and `src/services/purchases.ts` refuses every purchase until a
+billing library and store products exist.
+
 Everything is stored on the device. There is no account and no API key; the only
 network call is the barcode lookup against Open Food Facts.
 

@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { RANK_TITLES } from '@/game/leveling';
 import { useToday } from '@/hooks/useToday';
+import { useArcade } from '@/store/useArcade';
 import { useGame } from '@/store/useGame';
 import { useTheme } from '@/theme/ThemeProvider';
 
@@ -35,6 +36,7 @@ export function PlayerCard({ cardRef }: { cardRef?: React.Ref<CardRef> }) {
   const { id, colors, shape } = useTheme();
   const profile = useGame((s) => s.data.profile);
   const xp = useGame((s) => s.data.xp);
+  const plus = useArcade((s) => s.data.plus);
   const { level, rank, streak, done, quests } = useToday();
   // The handheld era only has four shades, so the picture gives up its colour there.
   const mono = id === 'pocket';
@@ -57,7 +59,7 @@ export function PlayerCard({ cardRef }: { cardRef?: React.Ref<CardRef> }) {
               </Txt>
             ) : null}
             <Txt variant="label" size={10.5} color="accent">
-              {`Rank ${rank} · ${RANK_TITLES[rank]}`}
+              {`Rank ${rank} · ${RANK_TITLES[rank]}${plus ? ' · ★ plus' : ''}`}
             </Txt>
           </View>
           <RankBadge rank={rank} />

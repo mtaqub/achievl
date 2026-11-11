@@ -61,7 +61,7 @@ const layout = (props: LiveProps) => {
     expanded: (
       <Column modifiers={[fillMaxWidth(), paddingAll(4)]}>
         {header}
-        {meter('Food', props.foodLabel, props.food, props.foodColor)}
+        {meter('Food/Drink', props.foodLabel, props.food, props.foodColor)}
         {meter('Water', waterLabel, water, props.waterColor)}
         <Row verticalAlignment="center" horizontalArrangement="spaceBetween" modifiers={[fillMaxWidth(), padding(0, 6, 0, 0)]}>
           <FilledTonalButton onClick={() => ({ pendingWaterMl: props.pendingWaterMl + props.waterStepMl })}>

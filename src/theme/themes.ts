@@ -2,23 +2,19 @@ import { FontSpec, Theme, ThemeId } from './types';
 
 /** Font family names registered in `fontAssets.ts`. */
 export const F = {
-  titilliumLight: 'TitilliumWeb_300Light',
-  titillium: 'TitilliumWeb_400Regular',
-  titilliumSemi: 'TitilliumWeb_600SemiBold',
-  titilliumBold: 'TitilliumWeb_700Bold',
-  orbitron: 'Orbitron_700Bold',
-  rajdhani: 'Rajdhani_500Medium',
-  rajdhaniSemi: 'Rajdhani_600SemiBold',
-  silkscreen: 'Silkscreen_400Regular',
-  silkscreenBold: 'Silkscreen_700Bold',
+  mono: 'JetBrainsMono_400Regular',
+  monoBold: 'JetBrainsMono_700Bold',
   vt323: 'VT323_400Regular',
-  pressStart: 'PressStart2P_400Regular',
 } as const;
 
-const pixelBody: FontSpec = { regular: F.vt323, strong: F.vt323, scale: 1.32, leading: 1.0, tracking: 0.01, upper: false };
-const pressStart: FontSpec = { regular: F.pressStart, strong: F.pressStart, scale: 0.6, leading: 1.55, tracking: 0, upper: true, compact: 0.9 };
-// Terminal-style digits, used where an era's display font draws numbers that are hard to tell apart.
-const pixelNumber: FontSpec = { regular: F.vt323, strong: F.vt323, scale: 1.5, leading: 0.95, tracking: 0.03, upper: true };
+// Every era types like a terminal. The modern-looking eras use a clean monospace face;
+// the pixel eras use a dot-matrix terminal face, which is what their screens looked like.
+const monoDisplay: FontSpec = { regular: F.mono, strong: F.monoBold, scale: 0.86, leading: 1.25, tracking: -0.02, compact: 0.92 };
+const monoBody: FontSpec = { regular: F.mono, strong: F.monoBold, scale: 0.88, leading: 1.38, tracking: -0.02, compact: 0.92 };
+const mono = { display: monoDisplay, body: monoBody };
+const pixelType: FontSpec = { regular: F.vt323, strong: F.vt323, scale: 1.3, leading: 1.0, tracking: 0.01 };
+const pixelNumber: FontSpec = { regular: F.vt323, strong: F.vt323, scale: 1.5, leading: 0.95, tracking: 0.03 };
+const pixel8 = { display: pixelType, body: pixelType, number: pixelNumber };
 
 const blades: Theme = {
   id: 'blades',
@@ -64,10 +60,7 @@ const blades: Theme = {
     toastDim: '#C9D0D6',
     overlay: 'rgba(20,28,34,0.55)',
   },
-  fonts: {
-    display: { regular: F.titilliumSemi, strong: F.titilliumBold, scale: 1, leading: 1.2, tracking: 0, upper: false },
-    body: { regular: F.titillium, strong: F.titilliumSemi, scale: 1, leading: 1.3, tracking: 0, upper: false },
-  },
+  fonts: mono,
   shape: { radius: 12, panelRadius: 16, border: 1, gloss: true, hardShadow: false, softShadow: true, meter: 'gloss', header: 'strip', tab: 'blade' },
   backdrop: 'rings',
   toast: { place: 'bottom', shape: 'pill', quest: 'Achievement unlocked', milestone: 'Milestone unlocked', level: 'Level up' },
@@ -87,8 +80,8 @@ const wave: Theme = {
     bgGradient: ['#071636', '#0F3B7C', '#1A74AE'],
     backdropA: 'rgba(255,255,255,0.20)',
     backdropB: 'rgba(140,220,255,0.16)',
-    panel: ['rgba(255,255,255,0.13)', 'rgba(255,255,255,0.05)'],
-    panelBorder: 'rgba(255,255,255,0.28)',
+    panel: ['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.02)'],
+    panelBorder: 'rgba(255,255,255,0.16)',
     header: ['rgba(255,255,255,0)', 'rgba(255,255,255,0)'],
     headerText: '#FFFFFF',
     inset: 'rgba(0,10,40,0.35)',
@@ -117,13 +110,60 @@ const wave: Theme = {
     toastDim: 'rgba(255,255,255,0.7)',
     overlay: 'rgba(2,8,26,0.7)',
   },
-  fonts: {
-    display: { regular: F.titilliumLight, strong: F.titillium, scale: 1.06, leading: 1.2, tracking: 0.02, upper: false },
-    body: { regular: F.titillium, strong: F.titilliumSemi, scale: 1, leading: 1.3, tracking: 0.01, upper: false },
-  },
+  fonts: mono,
   shape: { radius: 6, panelRadius: 8, border: 1, gloss: false, hardShadow: false, softShadow: false, meter: 'flat', header: 'rule', tab: 'glow' },
   backdrop: 'ribbon',
   toast: { place: 'top', shape: 'card', quest: 'Trophy earned', milestone: 'Milestone earned', level: 'Level up' },
+};
+
+const aero: Theme = {
+  id: 'aero',
+  name: 'Frutiger Aero',
+  year: '2007',
+  era: 'Aero era',
+  blurb: 'Blue sky, green grass, glass panels and drifting bubbles.',
+  appIcon: 'Aero',
+  iconImage: require('../../assets/icons/aero.png'),
+  statusBar: 'dark',
+  colors: {
+    bg: '#58B6EC',
+    bgGradient: ['#D6F4FF', '#4FB2EC', '#86D455'],
+    backdropA: 'rgba(255,255,255,0.60)',
+    backdropB: 'rgba(255,255,255,0.28)',
+    panel: ['rgba(255,255,255,0.90)', 'rgba(228,246,255,0.74)'],
+    panelBorder: '#FFFFFF',
+    header: ['#74D2FF', '#1E8FDB'],
+    headerText: '#FFFFFF',
+    inset: '#D3ECF9',
+    insetBorder: '#9CCBE6',
+    text: '#0E3554',
+    textDim: '#3F6A88',
+    accent: '#2A8F18',
+    accentGradient: ['#9BE860', '#3DAA1E'],
+    accentText: '#FFFFFF',
+    accentAlt: '#1E8FDB',
+    hp: '#F0506E',
+    food: '#FF9D2E',
+    water: '#1EA7F0',
+    xp: '#57C22B',
+    danger: '#D93A4A',
+    gold: '#F2B01E',
+    silver: '#9DB4C4',
+    bronze: '#C98548',
+    platinum: '#5FC9E8',
+    tabBar: ['rgba(255,255,255,0.96)', 'rgba(206,236,252,0.96)'],
+    tabBorder: '#9CCBE6',
+    tabIdle: '#3F6A88',
+    toast: ['#3BA8EE', '#0F6DB8'],
+    toastBorder: '#FFFFFF',
+    toastText: '#FFFFFF',
+    toastDim: '#D6EEFF',
+    overlay: 'rgba(8,40,70,0.55)',
+  },
+  fonts: mono,
+  shape: { radius: 16, panelRadius: 20, border: 1, gloss: true, hardShadow: false, softShadow: true, meter: 'gloss', header: 'strip', tab: 'pill' },
+  backdrop: 'bubbles',
+  toast: { place: 'top', shape: 'pill', quest: 'Achievement unlocked', milestone: 'Milestone unlocked', level: 'Level up' },
 };
 
 const cube: Theme = {
@@ -136,12 +176,12 @@ const cube: Theme = {
   iconImage: require('../../assets/icons/cube.png'),
   statusBar: 'light',
   colors: {
-    bg: '#050818',
-    bgGradient: ['#02030A', '#070D2B', '#101C52'],
+    bg: '#0B0624',
+    bgGradient: ['#05030F', '#150B3A', '#2E1C74'],
     backdropA: 'rgba(77,208,225,0.22)',
-    backdropB: 'rgba(120,110,255,0.20)',
-    panel: ['rgba(24,36,96,0.72)', 'rgba(8,12,40,0.78)'],
-    panelBorder: '#3350C4',
+    backdropB: 'rgba(150,110,255,0.26)',
+    panel: ['rgba(44,30,110,0.72)', 'rgba(14,8,44,0.78)'],
+    panelBorder: '#5A45C8',
     header: ['rgba(0,0,0,0)', 'rgba(0,0,0,0)'],
     headerText: '#4DD0E1',
     inset: 'rgba(0,0,0,0.45)',
@@ -170,10 +210,7 @@ const cube: Theme = {
     toastDim: '#9FB2E6',
     overlay: 'rgba(0,0,6,0.78)',
   },
-  fonts: {
-    display: { regular: F.orbitron, strong: F.orbitron, scale: 0.8, leading: 1.25, tracking: 0.07, upper: true, compact: 0.88 },
-    body: { regular: F.rajdhani, strong: F.rajdhaniSemi, scale: 1.1, leading: 1.2, tracking: 0.02, upper: false },
-  },
+  fonts: mono,
   shape: { radius: 3, panelRadius: 4, border: 1, gloss: false, hardShadow: false, softShadow: false, meter: 'flat', header: 'tag', tab: 'glow' },
   backdrop: 'cubes',
   toast: { place: 'top', shape: 'card', quest: 'Quest complete', milestone: 'Milestone reached', level: 'Level up' },
@@ -223,11 +260,7 @@ const quest: Theme = {
     toastDim: '#FFD23F',
     overlay: 'rgba(8,6,40,0.8)',
   },
-  fonts: {
-    display: { regular: F.silkscreen, strong: F.silkscreenBold, scale: 0.86, leading: 1.25, tracking: 0, upper: true, compact: 0.84 },
-    body: pixelBody,
-    number: pixelNumber,
-  },
+  fonts: pixel8,
   shape: { radius: 6, panelRadius: 8, border: 3, gloss: false, hardShadow: false, softShadow: false, meter: 'segments', header: 'plain', tab: 'cursor' },
   backdrop: 'stars',
   toast: { place: 'top', shape: 'box', quest: 'Quest complete!', milestone: 'Milestone get!', level: 'Level up!' },
@@ -243,41 +276,41 @@ const pocket: Theme = {
   iconImage: require('../../assets/icons/pocket.png'),
   statusBar: 'dark',
   colors: {
-    bg: '#C5D49A',
-    bgGradient: ['#C5D49A', '#C5D49A'],
-    backdropA: 'rgba(30,51,25,0.10)',
-    backdropB: 'rgba(30,51,25,0.10)',
-    panel: ['#C5D49A', '#C5D49A'],
-    panelBorder: '#1E3319',
-    header: ['#1E3319', '#1E3319'],
-    headerText: '#C5D49A',
-    inset: '#9DB06A',
-    insetBorder: '#1E3319',
-    text: '#1E3319',
-    textDim: '#4E6B36',
-    accent: '#1E3319',
-    accentGradient: ['#1E3319', '#1E3319'],
-    accentText: '#C5D49A',
-    accentAlt: '#4E6B36',
-    hp: '#1E3319',
-    food: '#1E3319',
-    water: '#1E3319',
-    xp: '#4E6B36',
-    danger: '#1E3319',
-    gold: '#1E3319',
-    silver: '#4E6B36',
-    bronze: '#4E6B36',
-    platinum: '#1E3319',
-    tabBar: ['#9DB06A', '#9DB06A'],
-    tabBorder: '#1E3319',
-    tabIdle: '#4E6B36',
-    toast: ['#C5D49A', '#C5D49A'],
-    toastBorder: '#1E3319',
-    toastText: '#1E3319',
-    toastDim: '#4E6B36',
-    overlay: 'rgba(30,51,25,0.6)',
+    bg: '#9BBC0F',
+    bgGradient: ['#9BBC0F', '#9BBC0F'],
+    backdropA: 'rgba(15,56,15,0.10)',
+    backdropB: 'rgba(15,56,15,0.10)',
+    panel: ['#9BBC0F', '#9BBC0F'],
+    panelBorder: '#0F380F',
+    header: ['#0F380F', '#0F380F'],
+    headerText: '#9BBC0F',
+    inset: '#8BAC0F',
+    insetBorder: '#0F380F',
+    text: '#0F380F',
+    textDim: '#306230',
+    accent: '#0F380F',
+    accentGradient: ['#0F380F', '#0F380F'],
+    accentText: '#9BBC0F',
+    accentAlt: '#306230',
+    hp: '#0F380F',
+    food: '#0F380F',
+    water: '#0F380F',
+    xp: '#306230',
+    danger: '#0F380F',
+    gold: '#0F380F',
+    silver: '#306230',
+    bronze: '#306230',
+    platinum: '#0F380F',
+    tabBar: ['#8BAC0F', '#8BAC0F'],
+    tabBorder: '#0F380F',
+    tabIdle: '#306230',
+    toast: ['#9BBC0F', '#9BBC0F'],
+    toastBorder: '#0F380F',
+    toastText: '#0F380F',
+    toastDim: '#306230',
+    overlay: 'rgba(15,56,15,0.6)',
   },
-  fonts: { display: pressStart, body: pixelBody },
+  fonts: pixel8,
   shape: { radius: 0, panelRadius: 0, border: 3, gloss: false, hardShadow: true, softShadow: false, meter: 'segments', header: 'strip', tab: 'cursor' },
   backdrop: 'dots',
   toast: { place: 'top', shape: 'box', quest: 'Stage clear', milestone: 'Bonus', level: 'Level up' },
@@ -327,20 +360,10 @@ const pixel: Theme = {
     toastDim: '#FCA044',
     overlay: 'rgba(0,0,0,0.85)',
   },
-  fonts: { display: pressStart, body: pixelBody },
+  fonts: pixel8,
   shape: { radius: 0, panelRadius: 0, border: 3, gloss: false, hardShadow: false, softShadow: false, meter: 'segments', header: 'plain', tab: 'cursor' },
   backdrop: 'scanlines',
   toast: { place: 'top', shape: 'box', quest: 'Quest clear!', milestone: 'Bonus!', level: 'Level up!' },
-};
-
-const system: FontSpec = {
-  regular: undefined,
-  strong: undefined,
-  scale: 1,
-  leading: 1.3,
-  tracking: 0,
-  upper: false,
-  systemWeights: { regular: '400', strong: '700' },
 };
 
 const flat: Theme = {
@@ -387,14 +410,14 @@ const flat: Theme = {
     toastDim: '#98A2B3',
     overlay: 'rgba(0,0,0,0.7)',
   },
-  fonts: { display: { ...system, systemWeights: { regular: '500', strong: '700' } }, body: system },
+  fonts: mono,
   shape: { radius: 14, panelRadius: 18, border: 1, gloss: false, hardShadow: false, softShadow: false, meter: 'flat', header: 'plain', tab: 'pill' },
   backdrop: 'plain',
   toast: { place: 'top', shape: 'pill', quest: 'Achievement unlocked', milestone: 'Milestone unlocked', level: 'Level up' },
 };
 
-/** In picker order: the two HD-era looks first, then back through time, then today. */
-export const THEMES: Theme[] = [blades, wave, cube, quest, pocket, pixel, flat];
+/** In picker order: the three HD-era looks first, then back through time, then today. */
+export const THEMES: Theme[] = [blades, wave, aero, cube, quest, pocket, pixel, flat];
 
 export const DEFAULT_THEME: Theme = blades;
 

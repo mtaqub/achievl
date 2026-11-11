@@ -31,7 +31,7 @@ export interface Milestone {
 }
 
 /** Total number of eras, used by the "try them all" milestone. Kept in sync by a test. */
-export const ERA_COUNT = 7;
+export const ERA_COUNT = 8;
 
 const m = (id: string, tier: Tier, points: number, title: string, description: string, icon: string, target: number, value: Milestone['value']): Milestone => ({
   id,
