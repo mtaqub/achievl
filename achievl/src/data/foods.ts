@@ -124,17 +124,15 @@ const ROWS: Row[] = [
   ['mac-cheese', 'Mac & Cheese', '1 cup (200 g)', 'meal', 4, 350, 12, 43, 14, 2, 6, 5, 720],
 ];
 
-export const BUILTIN_FOODS: Food[] = ROWS.map(
-  ([id, name, serving, cat, processing, kcal, protein, carbs, fat, fiber, sugar, satFat, sodiumMg]) => ({
-    id: `builtin:${id}`,
-    name,
-    serving,
-    source: 'builtin' as const,
-    icon: CAT_ICON[cat],
-    processing,
-    nutrients: { kcal, protein, carbs, fat, fiber, sugar, satFat, sodiumMg },
-  })
-);
+export const BUILTIN_FOODS: Food[] = ROWS.map(([id, name, serving, cat, processing, kcal, protein, carbs, fat, fiber, sugar, satFat, sodiumMg]) => ({
+  id: `builtin:${id}`,
+  name,
+  serving,
+  source: 'builtin' as const,
+  icon: CAT_ICON[cat],
+  processing,
+  nutrients: { kcal, protein, carbs, fat, fiber, sugar, satFat, sodiumMg },
+}));
 
 export const DEFAULT_FOOD_ICON = 'silverware-fork-knife';
 export const SCANNED_FOOD_ICON = 'barcode-scan';

@@ -1,13 +1,5 @@
 import { BUILTIN_FOODS } from '@/data/foods';
-import {
-  dayFoodScore,
-  formatVolume,
-  gradeForScore,
-  isValidBarcode,
-  judgeFood,
-  scoreNutrients,
-  waterGain,
-} from '../nutrition';
+import { dayFoodScore, formatVolume, gradeForScore, isValidBarcode, judgeFood, scaleNutrients, scoreNutrients, waterGain } from '../nutrition';
 import { Food, FoodEntry } from '../types';
 
 const food = (id: string): Food => {
@@ -49,8 +41,8 @@ describe('food scoring', () => {
 
   it('scores the same food the same at any serving size', () => {
     const base = food('oatmeal');
-    const doubled = { ...base, nutrients: Object.fromEntries(Object.entries(base.nutrients).map(([k, v]) => [k, v * 2])) as Food['nutrients'] };
-    expect(scoreNutrients(doubled.nutrients, doubled.processing)).toBeCloseTo(scoreNutrients(base.nutrients, base.processing), 6);
+    const doubled = scaleNutrients(base.nutrients, 2);
+    expect(scoreNutrients(doubled, base.processing)).toBeCloseTo(scoreNutrients(base.nutrients, base.processing), 6);
   });
 
   it('handles zero-calorie drinks without dividing by zero', () => {

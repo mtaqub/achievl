@@ -38,9 +38,13 @@
   },
   "devDependencies": {
     "@types/jest": "30.0.0",
+    "@types/node": "^26.6.6",
     "@types/react": "~19.3.0",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~58.0.4",
     "jest": "~30.5.2",
     "jest-expo": "~58.0.14",
+    "prettier": "^3.10.0",
     "sharp": "^0.35.5",
     "typescript": "~6.0.3"
   },
@@ -52,7 +56,8 @@
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\" \"scripts/*.mjs\""
   },
   "private": true,
   "jest": {

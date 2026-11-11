@@ -1,24 +1,35 @@
 {
   "expo": {
-    "name": "achievl",
+    "name": "Achievl",
     "slug": "achievl",
-    "version": "1.0.0",
+    "scheme": "achievl",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.achievl.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "com.achievl.app",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#D5DADF",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS"
+      ],
       "predictiveBackGestureEnabled": false
     },
     "web": {
+      "bundler": "metro",
+      "output": "single",
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
@@ -26,9 +37,83 @@
       "expo-status-bar",
       "expo-font",
       "expo-sharing",
-      "expo-splash-screen",
-      "expo-alternate-app-icons",
-      "expo-widgets"
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "resizeMode": "contain",
+          "backgroundColor": "#D5DADF"
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Achievl uses the camera to scan food barcodes.",
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-alternate-app-icons",
+        [
+          {
+            "name": "Wave",
+            "ios": "./assets/icons/wave.png",
+            "android": {
+              "foregroundImage": "./assets/icons/wave-foreground.png",
+              "backgroundColor": "#0F3B7C"
+            }
+          },
+          {
+            "name": "Cube",
+            "ios": "./assets/icons/cube.png",
+            "android": {
+              "foregroundImage": "./assets/icons/cube-foreground.png",
+              "backgroundColor": "#070D2B"
+            }
+          },
+          {
+            "name": "Quest",
+            "ios": "./assets/icons/quest.png",
+            "android": {
+              "foregroundImage": "./assets/icons/quest-foreground.png",
+              "backgroundColor": "#2A2389"
+            }
+          },
+          {
+            "name": "Pocket",
+            "ios": "./assets/icons/pocket.png",
+            "android": {
+              "foregroundImage": "./assets/icons/pocket-foreground.png",
+              "backgroundColor": "#C5D49A"
+            }
+          },
+          {
+            "name": "Pixel",
+            "ios": "./assets/icons/pixel.png",
+            "android": {
+              "foregroundImage": "./assets/icons/pixel-foreground.png",
+              "backgroundColor": "#000000"
+            }
+          },
+          {
+            "name": "Flat",
+            "ios": "./assets/icons/flat.png",
+            "android": {
+              "foregroundImage": "./assets/icons/flat-foreground.png",
+              "backgroundColor": "#15181D"
+            }
+          }
+        ]
+      ],
+      [
+        "expo-widgets",
+        {
+          "bundleIdentifier": "com.achievl.app.widgets",
+          "groupIdentifier": "group.com.achievl.app",
+          "widgets": []
+        }
+      ]
     ]
   }
 }

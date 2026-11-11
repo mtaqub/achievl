@@ -6,20 +6,7 @@ import { addDays, dayKey, isWeekend } from './dates';
 import { applyGain, emptyStats, levelFromXp, questGain, rankForLevel, RANK_TITLES } from './leveling';
 import { MILESTONES, MilestoneContext } from './milestones';
 import { dayNutrients, foodGain, judgeFood, waterGain } from './nutrition';
-import {
-  Completion,
-  DayLog,
-  Food,
-  FoodEntry,
-  Gain,
-  Goals,
-  Meal,
-  Quest,
-  QuestSlot,
-  QuestTemplate,
-  Stats,
-  Units,
-} from './types';
+import { Completion, DayLog, Food, FoodEntry, Gain, Goals, Meal, Quest, QuestSlot, QuestTemplate, Stats, Units } from './types';
 
 export interface Profile {
   name: string;
@@ -50,10 +37,14 @@ export interface Counters {
 export interface GameData {
   version: 1;
   onboarded: boolean;
+  /** Day the player finished setup. Health does not drain on this day. */
+  joinedOn?: string;
   profile: Profile;
   themeId: string;
   /** Change the home-screen icon along with the era. */
   matchIcon: boolean;
+  /** Keep today's progress on the Lock Screen (iOS Live Activity, Android ongoing notification). */
+  liveEnabled: boolean;
   xp: number;
   stats: Stats;
   quests: Quest[];
@@ -103,6 +94,7 @@ export function initialData(): GameData {
     profile: { name: 'Player One', motto: 'Ready when you are.', avatar: 'controller', color: AVATAR_COLORS[0] },
     themeId: DEFAULT_THEME_ID,
     matchIcon: true,
+    liveEnabled: true,
     xp: 0,
     stats: emptyStats(),
     quests: [],
@@ -150,9 +142,7 @@ export function isQuestOnDay(quest: Quest, day: string): boolean {
 
 /** The quest board for a day, ordered morning → evening → anytime. */
 export function questsForDay(data: GameData, day: string): Quest[] {
-  return data.quests
-    .filter((q) => isQuestOnDay(q, day))
-    .sort((a, b) => SLOT_ORDER[a.slot] - SLOT_ORDER[b.slot]);
+  return data.quests.filter((q) => isQuestOnDay(q, day)).sort((a, b) => SLOT_ORDER[a.slot] - SLOT_ORDER[b.slot]);
 }
 
 export function waterTotal(day: DayLog): number {
@@ -508,9 +498,7 @@ export function undoWater(data: GameData, now: Date): Outcome {
 // -------------------------------------------------- profile & settings
 
 export function setTheme(data: GameData, themeId: string, now: Date): Outcome {
-  const tried = data.counters.themesTried.includes(themeId)
-    ? data.counters.themesTried
-    : [...data.counters.themesTried, themeId];
+  const tried = data.counters.themesTried.includes(themeId) ? data.counters.themesTried : [...data.counters.themesTried, themeId];
   const next: GameData = { ...data, themeId, counters: { ...data.counters, themesTried: tried } };
   return settle(data, next, now);
 }
@@ -553,7 +541,7 @@ export interface OnboardingInput {
 }
 
 export function completeOnboarding(data: GameData, input: OnboardingInput, now: Date): Outcome {
-  let next = setProfile({ ...data, onboarded: true }, { name: input.name });
+  let next = setProfile({ ...data, onboarded: true, joinedOn: dayKey(now) }, { name: input.name });
   next = setTheme(next, input.themeId, now).data;
   for (const template of input.templates) {
     next = addQuestFromTemplate(next, template, now).data;

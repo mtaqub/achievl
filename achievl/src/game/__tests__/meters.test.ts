@@ -54,6 +54,11 @@ describe('meters', () => {
     expect(stuffed.food).toBeCloseTo(1.6);
   });
 
+  it('never drains on the first day', () => {
+    const m = computeMeters({ ...base, hour: 23, grace: true });
+    expect(m).toMatchObject({ hp: 100, pace: 0, drains: { thirst: 0, hunger: 0, idle: 0, overfed: 0 } });
+  });
+
   it('survives zero goals', () => {
     const m = computeMeters({ ...base, kcalGoal: 0, waterGoalMl: 0, hour: 12 });
     expect(Number.isFinite(m.hp)).toBe(true);

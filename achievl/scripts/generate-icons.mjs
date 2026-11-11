@@ -1,5 +1,6 @@
 // Draws the Achievl mark in each era's style and writes every app icon the build needs.
 // Run with: npm run icons
+import { Buffer } from 'node:buffer';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,12 +10,10 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const out = (...p) => path.join(root, 'assets', ...p);
 const S = 1024;
 
-const svg = (body, defs = '') =>
-  `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}" viewBox="0 0 ${S} ${S}"><defs>${defs}</defs>${body}</svg>`;
+const svg = (body, defs = '') => `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}" viewBox="0 0 ${S} ${S}"><defs>${defs}</defs>${body}</svg>`;
 
 // The mark: a ring holding an "A" built from an upward chevron — achieve, level up.
-const ring = (stroke, width, r = 300) =>
-  `<circle cx="512" cy="512" r="${r}" fill="none" stroke="${stroke}" stroke-width="${width}"/>`;
+const ring = (stroke, width, r = 300) => `<circle cx="512" cy="512" r="${r}" fill="none" stroke="${stroke}" stroke-width="${width}"/>`;
 const letterA = (stroke, width, square = false) =>
   `<g fill="none" stroke="${stroke}" stroke-width="${width}" stroke-linecap="${square ? 'square' : 'round'}" stroke-linejoin="${square ? 'miter' : 'round'}">` +
   `<path d="M372 664 L512 352 L652 664"/><path d="M430 566 L594 566"/></g>`;
@@ -170,7 +169,10 @@ await mkdir(out('icons'), { recursive: true });
 
 for (const [id, era] of Object.entries(ERAS)) {
   // iOS icons must be opaque.
-  await render(era.full).flatten({ background: era.background }).png().toFile(out('icons', `${id}.png`));
+  await render(era.full)
+    .flatten({ background: era.background })
+    .png()
+    .toFile(out('icons', `${id}.png`));
   await adaptiveForeground(era.glyph, out('icons', `${id}-foreground.png`));
   console.log(`icons/${id}.png, icons/${id}-foreground.png`);
 }
@@ -179,7 +181,9 @@ for (const [id, era] of Object.entries(ERAS)) {
 const base = ERAS.blades;
 await render(base.full).flatten({ background: base.background }).png().toFile(out('icon.png'));
 await adaptiveForeground(base.glyph, out('android-icon-foreground.png'));
-await sharp({ create: { width: S, height: S, channels: 4, background: base.background } }).png().toFile(out('android-icon-background.png'));
+await sharp({ create: { width: S, height: S, channels: 4, background: base.background } })
+  .png()
+  .toFile(out('android-icon-background.png'));
 await adaptiveForeground(svg(`${ring('#000000', 40, 300)}${letterA('#000000', 62)}`), out('android-icon-monochrome.png'));
 await render(base.glyph, 400).png().toFile(out('splash-icon.png'));
 await render(base.full, 64).flatten({ background: base.background }).png().toFile(out('favicon.png'));

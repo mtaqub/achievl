@@ -71,10 +71,7 @@ describe('built-in foods', () => {
   });
 
   it('searches by every word, case-insensitively', () => {
-    expect(searchFoods(BUILTIN_FOODS, 'CHICKEN grilled').map((f) => f.name)).toEqual([
-      'Chicken Breast, grilled',
-      'Grilled Chicken Salad',
-    ]);
+    expect(searchFoods(BUILTIN_FOODS, 'CHICKEN grilled').map((f) => f.name)).toEqual(['Chicken Breast, grilled', 'Grilled Chicken Salad']);
     expect(searchFoods(BUILTIN_FOODS, '   ')).toHaveLength(BUILTIN_FOODS.length);
     expect(searchFoods(BUILTIN_FOODS, 'zzzz')).toHaveLength(0);
   });

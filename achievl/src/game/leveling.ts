@@ -65,11 +65,7 @@ export function emptyStats(): Stats {
 }
 
 /** Adds (sign = 1) or removes (sign = -1) a gain. Totals never drop below zero. */
-export function applyGain(
-  totals: { xp: number; stats: Stats },
-  gain: Gain,
-  sign: 1 | -1 = 1
-): { xp: number; stats: Stats } {
+export function applyGain(totals: { xp: number; stats: Stats }, gain: Gain, sign: 1 | -1 = 1): { xp: number; stats: Stats } {
   const stats = { ...totals.stats };
   for (const key of STAT_KEYS) {
     const delta = gain.stats[key];

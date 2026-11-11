@@ -18,6 +18,8 @@ export interface MeterInput {
   questsTotal: number;
   /** Decimal hour of the day, e.g. 14.5. Pass 24 for a finished day. */
   hour: number;
+  /** The player's first day: nothing is expected yet, so health cannot drain. */
+  grace?: boolean;
 }
 
 export type HealthStatus = 'Peak' | 'Steady' | 'Worn' | 'Critical' | 'Down';
@@ -62,7 +64,7 @@ export function computeMeters(input: MeterInput): Meters {
   const food = input.kcalGoal > 0 ? input.kcal / input.kcalGoal : 0;
   const water = input.waterGoalMl > 0 ? input.waterMl / input.waterGoalMl : 0;
   const quests = input.questsTotal > 0 ? input.questsDone / input.questsTotal : 1;
-  const pace = paceAt(input.hour);
+  const pace = input.grace ? 0 : paceAt(input.hour);
 
   const behind = (ratio: number) => clamp01(pace - Math.min(1, ratio));
 

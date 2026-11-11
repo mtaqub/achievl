@@ -97,7 +97,11 @@ describe('quests', () => {
 
   it('respects weekday and weekend schedules', () => {
     let data = initialData();
-    data = addQuest(data, { title: 'Commute Podcast', icon: 'music', points: 10, stat: 'INT', category: 'mind', slot: 'morning', repeat: 'weekdays' }, at(MON)).data;
+    data = addQuest(
+      data,
+      { title: 'Commute Podcast', icon: 'music', points: 10, stat: 'INT', category: 'mind', slot: 'morning', repeat: 'weekdays' },
+      at(MON)
+    ).data;
     data = addQuest(data, { title: 'Long Hike', icon: 'walk', points: 40, stat: 'AGI', category: 'body', slot: 'anytime', repeat: 'weekends' }, at(MON)).data;
     expect(questsForDay(data, MON).map((q) => q.title)).toEqual(['Commute Podcast']);
     expect(questsForDay(data, SAT).map((q) => q.title)).toEqual(['Long Hike']);
@@ -105,7 +109,11 @@ describe('quests', () => {
 
   it('carries a one-off quest forward until it is done, then drops it', () => {
     let data = initialData();
-    data = addQuest(data, { title: 'Renew Passport', icon: 'flag-checkered', points: 50, stat: 'WIL', category: 'home', slot: 'anytime', repeat: 'once' }, at(MON)).data;
+    data = addQuest(
+      data,
+      { title: 'Renew Passport', icon: 'flag-checkered', points: 50, stat: 'WIL', category: 'home', slot: 'anytime', repeat: 'once' },
+      at(MON)
+    ).data;
     const id = data.quests[0].id;
     expect(questsForDay(data, TUE)).toHaveLength(1);
     data = completeQuest(data, id, at(TUE)).data;
@@ -141,7 +149,11 @@ describe('quests', () => {
   });
 
   it('counts custom quests toward the designer milestone', () => {
-    const { data, toasts } = addQuest(initialData(), { title: 'Feed the Cat', icon: 'cat', points: 5, stat: 'CHA', category: 'home', slot: 'morning', repeat: 'daily' }, at(MON));
+    const { data, toasts } = addQuest(
+      initialData(),
+      { title: 'Feed the Cat', icon: 'cat', points: 5, stat: 'CHA', category: 'home', slot: 'morning', repeat: 'daily' },
+      at(MON)
+    );
     expect(data.counters.customQuests).toBe(1);
     expect(toasts.map((t) => t.title)).toEqual(['Quest Designer']);
   });
@@ -294,8 +306,8 @@ describe('socials and eras', () => {
     let data = setTheme(initialData(), 'wave', at(MON)).data;
     data = setTheme(data, 'wave', at(MON)).data;
     expect(data.counters.themesTried).toEqual(['blades', 'wave']);
-    const third = setTheme(data, 'bit8', at(MON));
-    expect(third.data.themeId).toBe('bit8');
+    const third = setTheme(data, 'pixel', at(MON));
+    expect(third.data.themeId).toBe('pixel');
     expect(third.toasts.map((t) => t.title)).toEqual(['Time Traveler']);
   });
 });
@@ -305,6 +317,7 @@ describe('onboarding', () => {
     const templates = QUEST_CATALOG.slice(0, 3);
     const { data } = completeOnboarding(initialData(), { name: '  Kei  ', themeId: 'wave', templates }, at(MON));
     expect(data.onboarded).toBe(true);
+    expect(data.joinedOn).toBe(MON);
     expect(data.profile.name).toBe('Kei');
     expect(data.themeId).toBe('wave');
     expect(data.quests).toHaveLength(3);
