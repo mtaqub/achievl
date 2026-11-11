@@ -88,7 +88,7 @@ export default function Fuel() {
 
   return (
     <Screen title="Fuel" subtitle={formatDay(today)}>
-      <Panel title="Food" icon="food-apple">
+      <Panel title="Food/Drink" icon="food-apple">
         <View style={styles.block}>
           <View style={styles.kcalRow}>
             <View style={styles.kcalText}>
@@ -116,7 +116,7 @@ export default function Fuel() {
           </View>
           <View style={styles.buttons}>
             <Btn label="Scan" icon="barcode-scan" onPress={() => router.push('/scan')} style={styles.button} accessibilityLabel="Scan barcode" />
-            <Btn label="Add food" icon="plus" variant="secondary" onPress={() => router.push('/food-add')} style={styles.button} />
+            <Btn label="Add food/drink" icon="plus" variant="secondary" onPress={() => router.push('/food-add')} style={styles.button} />
           </View>
         </View>
       </Panel>

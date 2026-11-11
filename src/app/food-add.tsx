@@ -30,7 +30,7 @@ export default function FoodAdd() {
   }, [myFoods, query, source]);
 
   return (
-    <Screen title="Add food" subtitle="Search, scan or enter it yourself" back>
+    <Screen title="Add food/drink" subtitle="Search, scan or enter it yourself" back>
       <View style={styles.buttons}>
         <Btn label="Scan" icon="barcode-scan" onPress={() => router.push('/scan')} style={styles.button} accessibilityLabel="Scan barcode" />
         <Btn

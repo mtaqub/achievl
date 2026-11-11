@@ -90,6 +90,62 @@ function Ribbon({ theme, active }: { theme: Theme; active: boolean }) {
   );
 }
 
+/** Aero era: glassy bubbles drifting up through a blue sky. */
+function Bubbles({ theme, active }: { theme: Theme; active: boolean }) {
+  const { width, height } = useWindowDimensions();
+  const t = useLoop(34000, active);
+  const bubbles = useMemo(() => {
+    const r = seeded(42, 23);
+    return Array.from({ length: 14 }, (_, i) => ({
+      x: r[i * 3] * width,
+      size: 18 + r[i * 3 + 1] * 84,
+      // Kept away from 0 and 1 so the loop's wrap point is always inside the animation.
+      phase: 0.05 + r[i * 3 + 2] * 0.9,
+    }));
+  }, [width]);
+  return (
+    <>
+      {bubbles.map((b, i) => {
+        const translateY = t.interpolate({
+          inputRange: [0, 1 - b.phase, 1 - b.phase + 0.0001, 1],
+          outputRange: [height * (1 - b.phase) + b.size, -b.size * 2, height + b.size, height * (1 - b.phase) + b.size],
+        });
+        const sway = t.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [0, 10, 0, -10, 0] });
+        return (
+          <Animated.View
+            key={i}
+            style={{
+              position: 'absolute',
+              left: b.x - b.size / 2,
+              top: 0,
+              width: b.size,
+              height: b.size,
+              borderRadius: b.size / 2,
+              borderWidth: 1.5,
+              borderColor: theme.colors.backdropA,
+              backgroundColor: 'rgba(255,255,255,0.10)',
+              transform: [{ translateY }, { translateX: sway }],
+            }}>
+            {/* The window-shaped highlight that makes a circle read as glass. */}
+            <View
+              style={{
+                position: 'absolute',
+                left: b.size * 0.18,
+                top: b.size * 0.12,
+                width: b.size * 0.34,
+                height: b.size * 0.2,
+                borderRadius: b.size * 0.2,
+                backgroundColor: theme.colors.backdropA,
+                transform: [{ rotate: '-28deg' }],
+              }}
+            />
+          </Animated.View>
+        );
+      })}
+    </>
+  );
+}
+
 /** Y2K era: glass cubes floating up through the fog. */
 function Cubes({ theme, active }: { theme: Theme; active: boolean }) {
   const { width, height } = useWindowDimensions();
@@ -199,6 +255,7 @@ export function EraBackdrop() {
       <LinearGradient colors={theme.colors.bgGradient} style={StyleSheet.absoluteFill} />
       {theme.backdrop === 'rings' && <Rings theme={theme} active={focused} />}
       {theme.backdrop === 'ribbon' && <Ribbon theme={theme} active={focused} />}
+      {theme.backdrop === 'bubbles' && <Bubbles theme={theme} active={focused} />}
       {theme.backdrop === 'cubes' && <Cubes theme={theme} active={focused} />}
       {theme.backdrop === 'stars' && <Stars theme={theme} active={focused} />}
       {(theme.backdrop === 'dots' || theme.backdrop === 'scanlines') && <Texture theme={theme} kind={theme.backdrop} />}

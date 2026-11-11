@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { Btn } from '@/components/Btn';
 import { Divider, Row } from '@/components/controls';
+import { Icon } from '@/components/Icon';
 import { Meter } from '@/components/Meter';
 import { Panel } from '@/components/Panel';
 import { PlayerCard } from '@/components/PlayerCard';
@@ -14,6 +15,7 @@ import { formatDay, formatTime } from '@/game/dates';
 import { waterStep } from '@/game/live';
 import { formatVolume } from '@/game/nutrition';
 import { useToday } from '@/hooks/useToday';
+import { useWallet } from '@/hooks/useWallet';
 import { useGame } from '@/store/useGame';
 import { useTheme } from '@/theme/ThemeProvider';
 
@@ -27,6 +29,7 @@ export default function Dashboard() {
   const logWater = useGame((s) => s.logWater);
   const { today, quests, log, done, nutrients, waterMl, meters, firstDay } = useToday();
 
+  const wallet = useWallet();
   const step = waterStep(units);
   const upNext = quests.filter((q) => !log.completions[q.id]).slice(0, 4);
   const unlocked = Object.values(log.completions)
@@ -44,7 +47,7 @@ export default function Dashboard() {
         <View style={styles.meters}>
           <Meter label="Health" icon="heart" color={colors.hp} value={meters.hp / 100} readout={`${meters.hp} HP · ${meters.status}`} />
           <Meter
-            label="Food"
+            label="Food/Drink"
             icon="food-apple"
             color={colors.food}
             value={meters.food}
@@ -77,13 +80,13 @@ export default function Dashboard() {
             accessibilityLabel={`Log ${step.label} of water`}
           />
           <Btn
-            label="Food"
+            label="Food/Drink"
             icon="silverware-fork-knife"
             size="sm"
             variant="secondary"
             onPress={() => router.push('/food-add')}
             style={styles.action}
-            accessibilityLabel="Log food"
+            accessibilityLabel="Log food or drink"
           />
           <Btn
             label="Scan"
@@ -119,6 +122,18 @@ export default function Dashboard() {
             <Btn label="Quest board" variant="ghost" size="sm" icon="chevron-right" onPress={() => router.navigate('/quests')} style={styles.more} />
           </View>
         )}
+      </Panel>
+
+      <Panel title="Arcade" icon="gamepad-variant">
+        <Row
+          icon="package-variant-closed"
+          iconColor={colors.gold}
+          title="Crates and loot boxes"
+          subtitle={`${wallet.keys} ${wallet.keys === 1 ? 'key' : 'keys'} · ${wallet.boxes} ${wallet.boxes === 1 ? 'box' : 'boxes'} · ${wallet.shards} shards`}
+          onPress={() => router.push('/arcade')}
+          right={<Icon name="chevron-right" size={24} color={colors.textDim} />}
+          accessibilityLabel="Open the arcade"
+        />
       </Panel>
 
       <Panel title="Unlocked today" icon="trophy">

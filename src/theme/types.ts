@@ -1,6 +1,6 @@
 import { ImageSourcePropType } from 'react-native';
 
-export type ThemeId = 'blades' | 'wave' | 'cube' | 'quest' | 'pocket' | 'pixel' | 'flat';
+export type ThemeId = 'blades' | 'wave' | 'aero' | 'cube' | 'quest' | 'pocket' | 'pixel' | 'flat';
 
 export type Gradient = readonly [string, string, ...string[]];
 
@@ -15,14 +15,13 @@ export interface FontSpec {
   leading: number;
   /** Letter spacing as a fraction of font size. */
   tracking: number;
-  upper: boolean;
   /** Extra shrink for buttons, tabs and chips, where wide fonts run out of room. Defaults to 1. */
   compact?: number;
   /** Only used with the system font, where weight comes from style rather than a file. */
   systemWeights?: { regular: '300' | '400' | '500'; strong: '600' | '700' | '800' };
 }
 
-export type Backdrop = 'rings' | 'ribbon' | 'cubes' | 'stars' | 'dots' | 'scanlines' | 'plain';
+export type Backdrop = 'rings' | 'ribbon' | 'bubbles' | 'cubes' | 'stars' | 'dots' | 'scanlines' | 'plain';
 export type MeterStyle = 'gloss' | 'segments' | 'flat';
 export type HeaderStyle = 'strip' | 'rule' | 'tag' | 'plain';
 export type TabStyle = 'blade' | 'glow' | 'cursor' | 'pill';

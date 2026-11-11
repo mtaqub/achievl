@@ -65,6 +65,14 @@
             }
           },
           {
+            "name": "Aero",
+            "ios": "./assets/icons/aero.png",
+            "android": {
+              "foregroundImage": "./assets/icons/aero-foreground.png",
+              "backgroundColor": "#4FB2EC"
+            }
+          },
+          {
             "name": "Cube",
             "ios": "./assets/icons/cube.png",
             "android": {
@@ -85,7 +93,7 @@
             "ios": "./assets/icons/pocket.png",
             "android": {
               "foregroundImage": "./assets/icons/pocket-foreground.png",
-              "backgroundColor": "#C5D49A"
+              "backgroundColor": "#9BBC0F"
             }
           },
           {

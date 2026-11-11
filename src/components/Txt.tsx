@@ -43,9 +43,10 @@ export function textStyle(theme: Theme, variant: TxtVariant, size?: number, comp
     fontFamily: base.strong ? spec.strong : spec.regular,
     fontSize,
     lineHeight: Math.round(fontSize * spec.leading),
-    letterSpacing: fontSize * (spec.tracking + (base.label && !spec.upper ? 0.08 : 0)),
+    letterSpacing: fontSize * (spec.tracking + (base.label ? 0.06 : 0)),
     ...(spec.systemWeights ? { fontWeight: base.strong ? spec.systemWeights.strong : spec.systemWeights.regular } : null),
-    ...(spec.upper || base.label ? { textTransform: 'uppercase' as const } : null),
+    // The whole app types like a command line: lower case, whatever the source text says.
+    textTransform: 'lowercase',
   };
 }
 

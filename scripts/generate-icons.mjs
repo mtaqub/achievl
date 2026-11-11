@@ -82,6 +82,27 @@ const ERAS = {
     glyph: svg(`${ring('#FFFFFF', 18, 300)}${letterA('#FFFFFF', 30)}`),
   },
 
+  // Blue sky, a glass orb and a green mark.
+  aero: {
+    background: '#4FB2EC',
+    full: svg(
+      `<rect width="${S}" height="${S}" fill="url(#bg)"/>
+       <circle cx="190" cy="230" r="70" fill="#FFF" opacity="0.28"/><circle cx="850" cy="170" r="44" fill="#FFF" opacity="0.3"/><circle cx="840" cy="820" r="90" fill="#FFF" opacity="0.2"/>
+       <circle cx="512" cy="512" r="360" fill="url(#orb)" stroke="#FFFFFF" stroke-opacity="0.85" stroke-width="10"/>
+       ${ring('#FFFFFF', 34, 252)}${letterA('#FFFFFF', 58)}
+       <ellipse cx="512" cy="322" rx="262" ry="150" fill="url(#gloss)"/>`,
+      `<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D6F4FF"/><stop offset="0.6" stop-color="#4FB2EC"/><stop offset="1" stop-color="#86D455"/></linearGradient>
+       <radialGradient id="orb" cx="0.4" cy="0.3" r="0.85"><stop offset="0" stop-color="#B6F27C"/><stop offset="0.55" stop-color="#4DB52A"/><stop offset="1" stop-color="#1E7A12"/></radialGradient>
+       <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF" stop-opacity="0.75"/><stop offset="1" stop-color="#FFF" stop-opacity="0"/></linearGradient>`
+    ),
+    glyph: svg(
+      `<circle cx="512" cy="512" r="360" fill="url(#orb)"/>${ring('#FFFFFF', 34, 252)}${letterA('#FFFFFF', 58)}
+       <ellipse cx="512" cy="322" rx="262" ry="150" fill="url(#gloss)"/>`,
+      `<radialGradient id="orb" cx="0.4" cy="0.3" r="0.85"><stop offset="0" stop-color="#B6F27C"/><stop offset="0.55" stop-color="#4DB52A"/><stop offset="1" stop-color="#1E7A12"/></radialGradient>
+       <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF" stop-opacity="0.75"/><stop offset="1" stop-color="#FFF" stop-opacity="0"/></linearGradient>`
+    ),
+  },
+
   // Near-black fog with glass cubes and a neon mark.
   cube: {
     background: '#070D2B',
@@ -116,14 +137,14 @@ const ERAS = {
 
   // Dot-matrix green.
   pocket: {
-    background: '#C5D49A',
+    background: '#9BBC0F',
     full: svg(
-      `<rect width="${S}" height="${S}" fill="#C5D49A"/><rect width="${S}" height="${S}" fill="url(#dots)"/>
-       <rect x="110" y="110" width="804" height="804" fill="none" stroke="#1E3319" stroke-width="36"/>
-       ${pixelA('#9DB06A', 48, 20, 20)}${pixelA('#1E3319', 48)}`,
-      `<pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#1E3319" fill-opacity="0.06"/></pattern>`
+      `<rect width="${S}" height="${S}" fill="#9BBC0F"/><rect width="${S}" height="${S}" fill="url(#dots)"/>
+       <rect x="110" y="110" width="804" height="804" fill="none" stroke="#0F380F" stroke-width="36"/>
+       ${pixelA('#8BAC0F', 48, 20, 20)}${pixelA('#0F380F', 48)}`,
+      `<pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#0F380F" fill-opacity="0.06"/></pattern>`
     ),
-    glyph: svg(`${pixelA('#9DB06A', 48, 20, 20)}${pixelA('#1E3319', 48)}`),
+    glyph: svg(`${pixelA('#8BAC0F', 48, 20, 20)}${pixelA('#0F380F', 48)}`),
   },
 
   // Black screen, white box, one loud colour.
