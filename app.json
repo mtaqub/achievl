@@ -23,7 +23,8 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "permissions": [
-        "android.permission.POST_NOTIFICATIONS"
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.CAMERA"
       ],
       "predictiveBackGestureEnabled": false
     },
@@ -122,6 +123,34 @@
           "widgets": []
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "ExpoWidgetsTarget",
+                  "bundleIdentifier": "com.achievl.app.widgets",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.com.achievl.app"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "f70d6e76-4f89-4762-adb2-22fc3c3e9f13"
+      }
+    },
+    "owner": "mtaqub"
   }
 }
