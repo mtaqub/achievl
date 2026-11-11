@@ -1,10 +1,11 @@
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect } from 'react';
-import { Animated, Easing, Platform, Pressable, StyleSheet, useAnimatedValue, View } from 'react-native';
+import { Animated, Easing, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Toast } from '@/game/engine';
+import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 import { useGame } from '@/store/useGame';
 import { useTheme } from '@/theme/ThemeProvider';
 import { Theme } from '@/theme/types';

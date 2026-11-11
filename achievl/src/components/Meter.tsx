@@ -1,7 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect } from 'react';
-import { Animated, StyleSheet, useAnimatedValue, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 
+import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 import { useTheme } from '@/theme/ThemeProvider';
 
 import { Icon } from './Icon';

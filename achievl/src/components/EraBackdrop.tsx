@@ -1,9 +1,10 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useIsFocused } from 'expo-router';
 import React, { useEffect, useMemo } from 'react';
-import { Animated, Easing, StyleSheet, useAnimatedValue, useWindowDimensions, View } from 'react-native';
+import { Animated, Easing, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Svg, { Defs, Path, Pattern, Rect } from 'react-native-svg';
 
+import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 import { useTheme } from '@/theme/ThemeProvider';
 import { Theme } from '@/theme/types';
 
