@@ -217,8 +217,8 @@ export default function Settings() {
       <Panel title="Data" icon="database-remove">
         <View style={styles.block}>
           <Txt variant="caption" color="dim">
-            Everything is stored on this device only. There is no account and nothing is uploaded, apart from barcode numbers sent to Open Food Facts when you
-            scan.
+            Your quests, food and stats are stored on this device only, with no account. Two things leave it: barcode numbers go to Open Food Facts when you
+            scan, and anything you post in the forum is public and stored on the forum server under your player name.
           </Txt>
           <Btn
             label="Erase all data"

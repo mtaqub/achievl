@@ -12,8 +12,8 @@ Purchases are designed but not connected: the products are listed in
 `src/arcade/premium.ts`, and `src/services/purchases.ts` refuses every purchase until a
 billing library and store products exist.
 
-Everything is stored on the device. There is no account and no API key; the only
-network call is the barcode lookup against Open Food Facts.
+Quests, food and stats are stored on the device, with no account. The barcode lookup
+calls Open Food Facts, and the forum (optional, below) talks to its own server.
 
 ## Run it
 
@@ -38,3 +38,22 @@ npm run lint
 These do not load the app in a browser, so also open `npx expo start --web` after
 touching anything imported from `react-native`: some of its exports are missing
 from `react-native-web`.
+
+## Forum setup
+
+The forum needs a Supabase project. Without one the app runs normally and the forum
+screen says it is offline.
+
+1. Create a project at supabase.com.
+2. In the dashboard, open Authentication, then Sign In / Providers, and switch on
+   **Anonymous Sign-Ins**. Players get a forum identity with no email or password.
+3. Open the SQL Editor, paste all of `supabase/schema.sql` and run it. It creates the
+   tables, the access rules, the posting rate limits and live updates for replies.
+4. Copy `.env.example` to `.env.local` and fill in the project URL and the
+   **publishable** key from Project Settings, API Keys. Never use the secret key: the
+   values in this file are built into the app.
+5. Restart `npx expo start`.
+
+Moderating: reports land in the `forum_reports` table. To take something down, set
+`hidden` to true on the thread or reply in the Table Editor. Turning on a CAPTCHA
+under Authentication, Attack Protection is worth doing before the app is public.
