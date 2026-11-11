@@ -1,29 +1,41 @@
-pkg/*
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
-# Ignore Bundle folder
-.bundle/*
+# dependencies
+node_modules/
 
-# Ignore Coveralls files
-coverage/*
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
 
-# Ignore Vim backup files.
-*~
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
 
-# Ignore Vim swap files.
-*.swp
+# Metro
+.metro-health-check*
 
-# Ignore Ctags
-/tags
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
 
-# Ignore Finder metadata.
+# macOS
 .DS_Store
+*.pem
 
-.idea/*
+# local env files
+.env*.local
 
-# Ignore rvm and rbenv files
-.ruby-version
-.ruby-gemset
+# typescript
+*.tsbuildinfo
 
-# Ignore YARD metadata and documentation.
-.yardoc/
-yard_docs/
+# generated native folders
+/ios
+/android
