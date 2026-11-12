@@ -86,3 +86,13 @@ screen says it is offline.
 Moderating: reports land in the `forum_reports` table. To take something down, set
 `hidden` to true on the thread or reply in the Table Editor. Turning on a CAPTCHA
 under Authentication, Attack Protection is worth doing before the app is public.
+
+## Over-the-air updates
+
+The app uses EAS Update. Every push to `master` runs `.github/workflows/eas-update.yml`, which runs the tests and publishes the new JavaScript to the `preview` channel. Builds made with the `preview` profile download it the next time they open; no new build is needed unless native code or `app.json` changes (bump `version` in `app.json` then, because updates are matched on the app version).
+
+One-time setup: create an access token at expo.dev (account settings → access tokens) and add it to this GitHub repo as the Actions secret `EXPO_TOKEN`. Until then the workflow skips itself.
+
+To publish by hand: `npx eas-cli@latest update --channel preview --environment preview --message "what changed"`.
+
+The workflow targets installed builds. For Expo Go, run `npx expo start` on the computer; changes appear on the phone as soon as files are saved.

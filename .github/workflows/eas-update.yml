@@ -1,0 +1,57 @@
+# Publishes an over-the-air update to the "preview" channel whenever master changes,
+# so installed preview builds pick up the new JavaScript on their next launch.
+# Needs one repository secret: EXPO_TOKEN (an Expo access token for the mtaqub account).
+name: EAS update
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: eas-update
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip when the token is missing
+        id: token
+        run: |
+          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "EXPO_TOKEN is not set; add it under Settings → Secrets → Actions to publish updates."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.token.outputs.ok == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.token.outputs.ok == 'true'
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up EAS CLI
+        if: steps.token.outputs.ok == 'true'
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install
+        if: steps.token.outputs.ok == 'true'
+        run: npm ci
+
+      - name: Test
+        if: steps.token.outputs.ok == 'true'
+        run: npx jest --ci
+
+      - name: Publish update
+        if: steps.token.outputs.ok == 'true'
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message || 'manual update' }}
+        run: eas update --channel preview --environment preview --message "$(printf '%s' "$COMMIT_MESSAGE" | head -n 1)" --non-interactive

@@ -151,6 +151,12 @@
         "projectId": "f70d6e76-4f89-4762-adb2-22fc3c3e9f13"
       }
     },
-    "owner": "mtaqub"
+    "owner": "mtaqub",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/f70d6e76-4f89-4762-adb2-22fc3c3e9f13"
+    }
   }
 }
