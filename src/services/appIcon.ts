@@ -1,3 +1,4 @@
+import { requireOptionalNativeModule } from 'expo';
 import { Platform } from 'react-native';
 
 import { Theme } from '@/theme/types';
@@ -7,6 +8,8 @@ type IconModule = typeof import('expo-alternate-app-icons');
 /** Loaded on demand: the module is native-only and absent from Expo Go. */
 function load(): IconModule | null {
   if (Platform.OS === 'web') return null;
+  // Metro reports a missing native module as fatal before any catch runs, so look first.
+  if (!requireOptionalNativeModule('ExpoAlternateAppIcons')) return null;
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports -- loaded on demand so a build without the native module still runs
     return require('expo-alternate-app-icons') as IconModule;
