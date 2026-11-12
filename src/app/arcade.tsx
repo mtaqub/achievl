@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { CRATES } from '@/arcade/crates';
+import { canSpinFree, canTwistFree } from '@/arcade/gacha';
 import { LOOT } from '@/arcade/loot';
 import { AP_PER_KEY, BOX_PRICE, canClaimDaily, KEY_PRICE } from '@/arcade/rules';
 import { Btn } from '@/components/Btn';
@@ -101,6 +102,26 @@ export default function Arcade() {
         ))}
       </Panel>
 
+      <Panel title="More gacha" icon="slot-machine">
+        <Row
+          icon="egg-easter"
+          iconColor={colors.accentAlt}
+          title={canTwistFree(data, today) ? 'Capsule machine · free twist' : 'Capsule machine'}
+          subtitle="Hats, glasses, tops and backgrounds for your avatar."
+          onPress={() => router.push('/capsule')}
+          right={chevron}
+        />
+        <Divider />
+        <Row
+          icon="ferris-wheel"
+          iconColor={colors.gold}
+          title={canSpinFree(data, today) ? 'Prize wheel · free spin' : 'Prize wheel'}
+          subtitle="Spin for shards, keys, boxes or the jackpot."
+          onPress={() => router.push('/wheel')}
+          right={chevron}
+        />
+      </Panel>
+
       <Panel title="Loot box" icon="gift">
         <Row
           icon="gift"
@@ -113,6 +134,8 @@ export default function Arcade() {
       </Panel>
 
       <Panel title="Yours" icon="treasure-chest">
+        <Row icon="account-edit" title="Avatar" subtitle="Build your look. Capsule parts unlock more." onPress={() => router.push('/avatar')} right={chevron} />
+        <Divider />
         <Row
           icon="pistol"
           title="Inventory"

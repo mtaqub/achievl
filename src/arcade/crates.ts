@@ -1,13 +1,17 @@
-import { Crate } from './types';
+import { SKINS } from './skins';
+import { Crate, CrateItem } from './types';
+
+type RawItem = Omit<CrateItem, 'pattern' | 'mod' | 'lore'>;
+type RawCrate = Omit<Crate, 'items'> & { items: RawItem[] };
 
 /**
  * Weapon models carry their real-world names; every finish name and colourway here is our own.
  */
-export const CRATES: Crate[] = [
+const RAW: RawCrate[] = [
   {
     id: 'dawn',
-    name: 'first light',
-    blurb: 'the starter crate: everyday finishes with a few sunrise colours.',
+    name: 'press start',
+    blurb: 'the starter crate: tutorials, save points and the first boss.',
     items: [
       { id: 'dawn:mp5-chalk-line', weapon: 'mp5', finish: 'chalk line', shape: 'smg', rarity: 'common', paint: ['#E9E4D8', '#9AA0A6'] },
       { id: 'dawn:p250-wet-cement', weapon: 'p250', finish: 'wet cement', shape: 'pistol', rarity: 'common', paint: ['#8D9399', '#555B61'] },
@@ -61,8 +65,8 @@ export const CRATES: Crate[] = [
   },
   {
     id: 'night',
-    name: 'night shift',
-    blurb: 'city-after-dark finishes: wet streets, neon and chrome.',
+    name: 'continue?',
+    blurb: 'late-night arcade finishes: neon, glitches and rage quits.',
     items: [
       { id: 'night:mac-10-wet-asphalt', weapon: 'mac-10', finish: 'wet asphalt', shape: 'smg', rarity: 'common', paint: ['#5B6470', '#23272E'] },
       { id: 'night:mp5-vending-glow', weapon: 'mp5', finish: 'vending glow', shape: 'smg', rarity: 'common', paint: ['#7FD6C2', '#2E5C56'] },
@@ -123,8 +127,8 @@ export const CRATES: Crate[] = [
   },
   {
     id: 'prism',
-    name: 'prism',
-    blurb: 'plus only: pearl, chrome and rainbow finishes.',
+    name: 'bonus stage',
+    blurb: 'plus only: holo, chrome and rainbow finishes.',
     plus: true,
     items: [
       { id: 'prism:mp5-soap-film', weapon: 'mp5', finish: 'soap film', shape: 'smg', rarity: 'common', paint: ['#D6F4FF', '#E8C8FF', '#C8FFE0'] },
@@ -189,6 +193,15 @@ export const CRATES: Crate[] = [
     ],
   },
 ];
+
+/** Raw items dressed with their finish name, pattern, mod and flavour text. */
+export const CRATES: Crate[] = RAW.map((crate) => ({
+  ...crate,
+  items: crate.items.map((item) => {
+    const skin = SKINS[item.id];
+    return skin ? { ...item, ...skin } : { ...item, pattern: 'plain' as const, lore: '' };
+  }),
+}));
 
 export function crateById(id: string): Crate | undefined {
   return CRATES.find((c) => c.id === id);

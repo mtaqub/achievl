@@ -173,6 +173,10 @@ export function initialArcade(): ArcadeData {
     boxesOpened: 0,
     quickOpen: false,
     plus: false,
+    avatarItems: {},
+    capsulesOpened: 0,
+    wheelSpins: 0,
+    runs: 0,
   };
 }
 

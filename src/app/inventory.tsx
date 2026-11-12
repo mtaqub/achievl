@@ -1,9 +1,11 @@
+import { useRouter } from 'expo-router';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { dropValue, findCrateItem, wearGrade } from '@/arcade/rules';
 import { RARITY_COLOR, RARITY_ORDER } from '@/arcade/types';
 import { Tile } from '@/arcade/ui/Tile';
+import { hashText } from '@/arcade/ui/Weapon';
 import { Btn } from '@/components/Btn';
 import { Divider } from '@/components/controls';
 import { confirm } from '@/components/Dialog';
@@ -16,6 +18,7 @@ export default function Inventory() {
   const inventory = useArcade((s) => s.data.inventory);
   const shards = useArcade((s) => s.data.shards);
   const scrap = useArcade((s) => s.scrap);
+  const router = useRouter();
 
   const rows = inventory
     .map((drop) => ({ drop, item: findCrateItem(drop.itemId) }))
@@ -54,18 +57,24 @@ export default function Inventory() {
               <View key={drop.uid}>
                 {i > 0 && <Divider />}
                 <View style={styles.row}>
-                  <Tile item={item} uid={`inv-${drop.uid}`} foil={drop.foil} width={84} />
-                  <View style={styles.text}>
-                    <Txt variant="bodyStrong" numberOfLines={2} color={drop.foil ? '#E08A1E' : 'text'}>
-                      {`${drop.foil ? '★ ' : ''}${item.weapon} | ${item.finish}`}
-                    </Txt>
-                    <Txt variant="caption" color={RARITY_COLOR[item.rarity]}>
-                      {item.rarity}
-                    </Txt>
-                    <Txt variant="caption" color="dim">
-                      {`${wearGrade(drop.wear)} · ${drop.wear.toFixed(4)}`}
-                    </Txt>
-                  </View>
+                  <Pressable
+                    style={styles.open}
+                    onPress={() => router.push({ pathname: '/inspect', params: { uid: drop.uid } })}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Inspect ${item.weapon} ${item.finish}`}>
+                    <Tile item={item} uid={`inv-${drop.uid}`} foil={drop.foil} width={84} wear={drop.wear} seed={hashText(drop.uid)} />
+                    <View style={styles.text}>
+                      <Txt variant="bodyStrong" numberOfLines={2} color={drop.foil ? '#E08A1E' : 'text'}>
+                        {`${drop.foil ? '★ ' : ''}${item.weapon} | ${item.finish}`}
+                      </Txt>
+                      <Txt variant="caption" color={RARITY_COLOR[item.rarity]}>
+                        {item.rarity}
+                      </Txt>
+                      <Txt variant="caption" color="dim">
+                        {`${wearGrade(drop.wear)} · ${drop.wear.toFixed(4)}`}
+                      </Txt>
+                    </View>
+                  </Pressable>
                   <Btn
                     label={`${dropValue(drop)}`}
                     icon="hammer"
@@ -86,5 +95,6 @@ export default function Inventory() {
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10 },
+  open: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 },
   text: { flex: 1, gap: 2 },
 });

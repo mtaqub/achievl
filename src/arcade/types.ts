@@ -13,6 +13,13 @@ export const RARITY_COLOR: Record<Rarity, string> = {
 
 export type Silhouette = 'pistol' | 'smg' | 'rifle' | 'sniper' | 'knife' | 'karambit';
 
+/** The design painted over a finish's colours. */
+export type Pattern =
+  'plain' | 'stripes' | 'camo' | 'flames' | 'scales' | 'circuit' | 'checker' | 'waves' | 'dots' | 'pixels' | 'hex' | 'splatter' | 'bolts' | 'stars' | 'bricks';
+
+/** A visible extra that sets a finish apart: a scope, a muzzle, grip tape, a gem or a glow. */
+export type WeaponMod = 'scope' | 'muzzle' | 'tape' | 'gem' | 'glow';
+
 /** A weapon finish that can drop from a crate. */
 export interface CrateItem {
   id: string;
@@ -24,6 +31,10 @@ export interface CrateItem {
   rarity: Rarity;
   /** Two or three colours the finish is painted with. */
   paint: readonly [string, string, ...string[]];
+  pattern: Pattern;
+  mod?: WeaponMod;
+  /** One line of flavour text for the inspect screen. */
+  lore: string;
 }
 
 export interface Crate {
@@ -92,4 +103,24 @@ export interface ArcadeData {
   quickOpen: boolean;
   /** Entitlement, set by the purchases service. */
   plus: boolean;
+  /** Avatar parts from the capsule machine: key -> time pulled. */
+  avatarItems: Record<string, number>;
+  capsulesOpened: number;
+  wheelSpins: number;
+  /** Days of the last free capsule twist and wheel spin. */
+  lastCapsule?: string;
+  lastWheel?: string;
+  /** The inventory item the avatar carries on the home page and into Dead Hours. */
+  equipped?: string;
+  /** Best Dead Hours run. */
+  bestRun?: { seconds: number; kills: number; won: boolean };
+  runs: number;
 }
+
+/** The capsule machine uses the loot box ladder (no uncommon). */
+export const CAPSULE_RARITY_COLOR: Record<'common' | 'rare' | 'epic' | 'legendary', string> = {
+  common: RARITY_COLOR.common,
+  rare: RARITY_COLOR.rare,
+  epic: RARITY_COLOR.epic,
+  legendary: RARITY_COLOR.legendary,
+};

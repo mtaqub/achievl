@@ -14,14 +14,28 @@ export const TILE_H = 104;
  * One item as it appears on the reel and in the inventory. Tiles are dark in every
  * era so the finishes and the rarity colours always read the same.
  */
-export function Tile({ item, uid, foil, width = TILE_W }: { item: CrateItem; uid: string; foil?: boolean; width?: number }) {
+export function Tile({
+  item,
+  uid,
+  foil,
+  width = TILE_W,
+  wear,
+  seed,
+}: {
+  item: CrateItem;
+  uid: string;
+  foil?: boolean;
+  width?: number;
+  wear?: number;
+  seed?: number;
+}) {
   const colour = RARITY_COLOR[item.rarity];
   return (
     <View style={[styles.tile, { width, height: (width / TILE_W) * TILE_H }]}>
       <LinearGradient colors={['#3B4048', '#23262C']} style={StyleSheet.absoluteFill} />
       <LinearGradient colors={['rgba(0,0,0,0)', `${colour}66`]} style={styles.glow} />
       <View style={styles.art}>
-        <Weapon item={item} uid={uid} width={width * 0.8} />
+        <Weapon item={item} uid={uid} width={width * 0.8} wear={wear} seed={seed} />
       </View>
       <View style={styles.names}>
         <Txt variant="caption" size={9.5} color={foil ? '#FFB347' : '#FFFFFF'} numberOfLines={1}>
