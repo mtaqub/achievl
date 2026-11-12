@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
 import { LoadoutPanel } from '@/components/LoadoutPanel';
+import { RunPanel } from '@/components/RunPanel';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -124,6 +125,8 @@ export default function Dashboard() {
           </View>
         )}
       </Panel>
+
+      <RunPanel />
 
       <LoadoutPanel />
 

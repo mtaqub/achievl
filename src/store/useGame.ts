@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+import { onFoodLogged, onQuestCompleted, onThemeChanged, onWaterLogged, syncRoster } from '@/core/appBridge';
 import * as engine from '@/game/engine';
 import { GameData, Outcome, Toast } from '@/game/engine';
 import { Food, Goals, Meal, QuestTemplate, Units } from '@/game/types';
@@ -44,7 +45,7 @@ export const STORAGE_KEY = 'achievl/save-v1';
 
 export const useGame = create<GameStore>()(
   persist(
-    (set) => {
+    (set, get) => {
       /** Applies an engine step and queues whatever it wants to announce. */
       const run = (step: (data: GameData, now: Date) => Outcome) =>
         set((state) => {
@@ -53,26 +54,41 @@ export const useGame = create<GameStore>()(
           return { data: outcome.data, toasts: [...state.toasts, ...outcome.toasts] };
         });
       const patch = (step: (data: GameData) => GameData) => set((state) => ({ data: step(state.data) }));
+      /** Runs a step, then tells the core engine if it actually changed something. */
+      const runThen = (step: (data: GameData, now: Date) => Outcome, after: (data: GameData) => void) => {
+        const before = get().data;
+        run(step);
+        const next = get().data;
+        if (next !== before) after(next);
+      };
 
       return {
         data: engine.initialData(),
         toasts: [],
 
-        completeQuest: (id) => run((d, now) => engine.completeQuest(d, id, now)),
+        completeQuest: (id) =>
+          runThen(
+            (d, now) => engine.completeQuest(d, id, now),
+            (d) => onQuestCompleted(d, id)
+          ),
         uncompleteQuest: (id) => run((d, now) => engine.uncompleteQuest(d, id, now)),
-        addQuest: (input) => run((d, now) => engine.addQuest(d, input, now)),
-        addQuestFromTemplate: (template) => run((d, now) => engine.addQuestFromTemplate(d, template, now)),
-        updateQuest: (id, changes) => run((d, now) => engine.updateQuest(d, id, changes, now)),
-        archiveQuest: (id) => run((d, now) => engine.archiveQuest(d, id, now)),
+        addQuest: (input) => runThen((d, now) => engine.addQuest(d, input, now), syncRoster),
+        addQuestFromTemplate: (template) => runThen((d, now) => engine.addQuestFromTemplate(d, template, now), syncRoster),
+        updateQuest: (id, changes) => runThen((d, now) => engine.updateQuest(d, id, changes, now), syncRoster),
+        archiveQuest: (id) => runThen((d, now) => engine.archiveQuest(d, id, now), syncRoster),
 
-        logFood: (food, servings, meal) => run((d, now) => engine.logFood(d, food, servings, meal, now)),
+        logFood: (food, servings, meal) => runThen((d, now) => engine.logFood(d, food, servings, meal, now), onFoodLogged),
         removeFood: (day, entryId) => run((d) => engine.removeFood(d, day, entryId)),
         saveFood: (food) => patch((d) => engine.saveFood(d, food)),
         removeSavedFood: (foodId) => patch((d) => engine.removeSavedFood(d, foodId)),
-        logWater: (ml) => run((d, now) => engine.logWater(d, ml, now)),
+        logWater: (ml) => runThen((d, now) => engine.logWater(d, ml, now), onWaterLogged),
         undoWater: () => run((d, now) => engine.undoWater(d, now)),
 
-        setTheme: (themeId) => run((d, now) => engine.setTheme(d, themeId, now)),
+        setTheme: (themeId) =>
+          runThen(
+            (d, now) => engine.setTheme(d, themeId, now),
+            () => onThemeChanged(themeId)
+          ),
         setMatchIcon: (on) => patch((d) => ({ ...d, matchIcon: on })),
         setLiveEnabled: (on) => patch((d) => ({ ...d, liveEnabled: on })),
         setSocial: (networkId, handle) => run((d, now) => engine.setSocial(d, networkId, handle, now)),
