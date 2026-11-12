@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { LoadoutPanel } from '@/components/LoadoutPanel';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -123,6 +124,8 @@ export default function Dashboard() {
           </View>
         )}
       </Panel>
+
+      <LoadoutPanel />
 
       <Panel title="Arcade" icon="gamepad-variant">
         <Row

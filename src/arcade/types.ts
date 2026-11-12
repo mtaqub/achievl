@@ -110,6 +110,11 @@ export interface ArcadeData {
   /** Days of the last free capsule twist and wheel spin. */
   lastCapsule?: string;
   lastWheel?: string;
+  /** The inventory item the avatar carries on the home page and into Dead Hours. */
+  equipped?: string;
+  /** Best Dead Hours run. */
+  bestRun?: { seconds: number; kills: number; won: boolean };
+  runs: number;
 }
 
 /** The capsule machine uses the loot box ladder (no uncommon). */

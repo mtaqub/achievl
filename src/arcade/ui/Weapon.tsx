@@ -274,6 +274,32 @@ function marked(pattern: Pattern, c: number, r: number, shift: number, noise: nu
   }
 }
 
+/** The coloured blocks of a weapon, shared by the flat art and the 3d model. */
+export function weaponBlocks(item: CrateItem, wear: number, patternSeed: number) {
+  const rnd = seeded(patternSeed);
+  const shift = Math.floor(rnd() * 12);
+  const grid = GRIDS[item.shape].map((row) => row.split('').map((ch) => ch === '#'));
+  const extra = new Map<string, string>();
+  if (item.mod) for (const [c, r] of MOD_CELLS[item.mod][item.shape] ?? []) extra.set(`${c},${r}`, '#2E3238');
+  if (item.mod === 'tape') for (const [c, r] of GRIP[item.shape]) extra.set(`${c},${r}`, item.paint[item.paint.length - 1]);
+  if (item.mod === 'gem') extra.set(`${GEM_AT[item.shape][0]},${GEM_AT[item.shape][1]}`, '#FFFFFF');
+  const filled = (c: number, r: number) => (grid[r]?.[c] ?? false) || extra.has(`${c},${r}`);
+  const ink = item.paint.length > 2 ? item.paint[2] : shade(item.paint[1], -0.35);
+
+  const out: { c: number; r: number; front: string; top: boolean; side: boolean }[] = [];
+  for (let r = 0; r < 12; r++)
+    for (let c = 0; c < 30; c++) {
+      if (!filled(c, r)) continue;
+      const noise = rnd();
+      let front = extra.get(`${c},${r}`) ?? paintAt(item.paint, c);
+      if (!extra.has(`${c},${r}`) && marked(item.pattern, c, r, shift, noise)) front = mix(front, ink, 0.6);
+      if (item.mod === 'gem' && extra.get(`${c},${r}`) === '#FFFFFF') front = item.paint[0];
+      if (rnd() < wear * 0.4) front = mix(front, '#C9CDD2', 0.55);
+      out.push({ c, r, front, top: !filled(c, r - 1), side: !filled(c + 1, r) });
+    }
+  return out;
+}
+
 interface Props {
   item: CrateItem;
   width?: number;
@@ -290,30 +316,7 @@ interface Props {
 /** A voxel weapon painted with its finish, pattern, mod and wear. */
 export function Weapon({ item, width = 96, wear = 0, seed, tint }: Props) {
   const patternSeed = seed ?? hashText(item.id);
-  const blocks = useMemo(() => {
-    const rnd = seeded(patternSeed);
-    const shift = Math.floor(rnd() * 12);
-    const grid = GRIDS[item.shape].map((row) => row.split('').map((ch) => ch === '#'));
-    const extra = new Map<string, string>();
-    if (item.mod) for (const [c, r] of MOD_CELLS[item.mod][item.shape] ?? []) extra.set(`${c},${r}`, '#2E3238');
-    if (item.mod === 'tape') for (const [c, r] of GRIP[item.shape]) extra.set(`${c},${r}`, item.paint[item.paint.length - 1]);
-    if (item.mod === 'gem') extra.set(`${GEM_AT[item.shape][0]},${GEM_AT[item.shape][1]}`, '#FFFFFF');
-    const filled = (c: number, r: number) => (grid[r]?.[c] ?? false) || extra.has(`${c},${r}`);
-    const ink = item.paint.length > 2 ? item.paint[2] : shade(item.paint[1], -0.35);
-
-    const out: { c: number; r: number; front: string; top: boolean; side: boolean }[] = [];
-    for (let r = 0; r < 12; r++)
-      for (let c = 0; c < 30; c++) {
-        if (!filled(c, r)) continue;
-        const noise = rnd();
-        let front = extra.get(`${c},${r}`) ?? paintAt(item.paint, c);
-        if (!extra.has(`${c},${r}`) && marked(item.pattern, c, r, shift, noise)) front = mix(front, ink, 0.6);
-        if (item.mod === 'gem' && extra.get(`${c},${r}`) === '#FFFFFF') front = item.paint[0];
-        if (rnd() < wear * 0.4) front = mix(front, '#C9CDD2', 0.55);
-        out.push({ c, r, front, top: !filled(c, r - 1), side: !filled(c + 1, r) });
-      }
-    return out;
-  }, [item, patternSeed, wear]);
+  const blocks = useMemo(() => weaponBlocks(item, wear, patternSeed), [item, patternSeed, wear]);
 
   const glow = item.mod === 'glow' && !tint;
 
@@ -336,4 +339,13 @@ export function Weapon({ item, width = 96, wear = 0, seed, tint }: Props) {
       ))}
     </Svg>
   );
+}
+
+/** The weapon as 3d voxels: two blocks deep, barrel along +x, standing on y. */
+export function weaponVoxels(item: CrateItem, wear = 0, seed?: number): [number, number, number, string][] {
+  const blocks = weaponBlocks(item, wear, seed ?? hashText(item.id));
+  return blocks.flatMap((b) => [
+    [b.c, 11 - b.r, 0, b.front] as [number, number, number, string],
+    [b.c, 11 - b.r, 1, b.front] as [number, number, number, string],
+  ]);
 }

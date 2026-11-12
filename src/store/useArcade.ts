@@ -20,6 +20,9 @@ interface ArcadeStore {
   claimDaily: (today: string) => void;
   setWishes: (wishes: LootKind[]) => void;
   setQuickOpen: (on: boolean) => void;
+  equip: (uid: string | undefined) => void;
+  /** Pays out a finished Dead Hours run. */
+  finishRun: (run: { seconds: number; kills: number; won: boolean; shards: number }) => void;
   twistCapsule: (today: string) => gacha.CapsulePull | 'no-shards';
   spinWheel: (today: string) => number | 'no-shards';
   /** Applies a purchase the store has confirmed. */
@@ -67,6 +70,15 @@ export const useArcade = create<ArcadeStore>()(
         set({ data: result.data });
         return result.index;
       },
+      equip: (uid) => set((s) => ({ data: { ...s.data, equipped: uid } })),
+      finishRun: ({ seconds, kills, won, shards }) =>
+        set((s) => {
+          const best = s.data.bestRun;
+          const better = !best || (won && !best.won) || (won === best.won && (seconds > best.seconds || (seconds === best.seconds && kills > best.kills)));
+          return {
+            data: { ...s.data, shards: s.data.shards + shards, runs: s.data.runs + 1, bestRun: better ? { seconds, kills, won } : best },
+          };
+        }),
       setQuickOpen: (on) => set((s) => ({ data: { ...s.data, quickOpen: on } })),
       grant: (productId) => set((s) => ({ data: grantProduct(s.data, productId) })),
       previewPlus: (on) => set((s) => ({ data: { ...s.data, plus: on, quickOpen: on ? s.data.quickOpen : false } })),

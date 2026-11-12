@@ -176,6 +176,7 @@ export function initialArcade(): ArcadeData {
     avatarItems: {},
     capsulesOpened: 0,
     wheelSpins: 0,
+    runs: 0,
   };
 }
 

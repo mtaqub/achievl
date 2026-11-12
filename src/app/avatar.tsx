@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { CAPSULE_RARITY_COLOR } from '@/arcade/types';
 import { tick } from '@/arcade/ui/feedback';
 import { Avatar } from '@/avatar/Avatar';
+import { LiveAvatar } from '@/avatar/LiveAvatar';
 import { canWear, PARTS, randomLook, Slot, SLOT_LABEL, SLOTS } from '@/avatar/parts';
 import { Btn } from '@/components/Btn';
 import { Icon } from '@/components/Icon';
@@ -31,7 +32,7 @@ export default function AvatarMaker() {
   return (
     <Screen title="Avatar" subtitle="Your face around the app" back>
       <View style={styles.preview}>
-        <Avatar look={look} size={190} uid="maker" />
+        <LiveAvatar look={look} size={210} bare={false} />
       </View>
       <View style={styles.row}>
         <Btn
@@ -93,6 +94,7 @@ export default function AvatarMaker() {
                     look={part.preset ? { ...look, ...part.preset, outfit: part.id } : { ...look, [slot]: part.id }}
                     size={62}
                     uid={`opt-${slot}-${part.id}`}
+                    headOnly={!['outfit', 'top', 'topColor', 'bg'].includes(slot)}
                     round={false}
                   />
                 )}

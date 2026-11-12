@@ -58,7 +58,11 @@ export function PlayerCard({ cardRef }: { cardRef?: React.Ref<CardRef> }) {
             accessibilityRole="button"
             accessibilityLabel={made ? 'Edit your avatar' : 'Make an avatar'}
             style={[styles.avatar, { backgroundColor: mono ? colors.text : profile.color, borderRadius: shape.radius, borderColor: colors.panelBorder }]}>
-            {made ? <Avatar look={look} size={62} uid="card" round={false} /> : <Icon name={profile.avatar} size={38} color={mono ? colors.bg : '#FFFFFF'} />}
+            {made ? (
+              <Avatar look={look} size={62} uid="card" round={false} headOnly />
+            ) : (
+              <Icon name={profile.avatar} size={38} color={mono ? colors.bg : '#FFFFFF'} />
+            )}
           </Pressable>
           <View style={styles.identity}>
             <Txt variant="title" numberOfLines={1} adjustsFontSizeToFit>
