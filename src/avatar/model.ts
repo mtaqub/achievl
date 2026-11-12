@@ -89,12 +89,27 @@ function headFor(face: string): Head {
 const COVERING_HATS = ['tophat', 'horns', 'wizard', 'beanie', 'cap', 'helmet', 'boonie', 'nvg', 'racehelm', 'tricorn', 'balaclava'];
 const TACTICAL_TOPS = ['vest', 'plate', 'camo', 'ghillie', 'gi'];
 
-export function buildAvatar(look: AvatarLook): Voxel[] {
+/** How the figure stands: a walk swing from -1 to 1, and which arms reach forward. */
+export interface Pose {
+  walk?: number;
+  /** Both arms straight out in front (zombies). */
+  reach?: boolean;
+  /** Right arm forward, as if aiming what it holds. */
+  aim?: boolean;
+}
+
+/** Looks up a colour slot, also accepting a raw hex colour (zombies use skins outside the palette). */
+function colourOf(slot: 'skin' | 'hairColor' | 'eyeColor' | 'topColor', value: string): string {
+  if (value.startsWith('#') && !partOf(slot, value).color?.startsWith(value)) return value;
+  return partOf(slot, value).color ?? value;
+}
+
+export function buildAvatar(look: AvatarLook, pose: Pose = {}): Voxel[] {
   const b = new Builder();
-  const skin = partOf('skin', look.skin).color ?? look.skin;
-  const hair = partOf('hairColor', look.hairColor).color ?? look.hairColor;
-  const eyeColour = partOf('eyeColor', look.eyeColor).color ?? look.eyeColor;
-  const colour = partOf('topColor', look.topColor).color ?? look.topColor;
+  const skin = colourOf('skin', look.skin);
+  const hair = colourOf('hairColor', look.hairColor);
+  const eyeColour = colourOf('eyeColor', look.eyeColor);
+  const colour = colourOf('topColor', look.topColor);
   const h = headFor(look.face);
   const fz = h.z1; // the face plane
   const row = (r: number) => h.y0 + r;
@@ -719,8 +734,38 @@ export function buildAvatar(look: AvatarLook): Voxel[] {
       break;
   }
 
-  return b.voxels();
+  return applyPose(b.voxels(), pose);
+}
+
+const isArm = (x: number, y: number, z: number) => (x <= 4 || x >= 15) && y >= 18 && y <= 48 && z >= 3;
+const isLeg = (x: number, y: number) => y <= 25 && x >= 5 && x <= 14;
+
+/** Bends the standing figure: legs and arms shear for a walk, arms rotate forward to reach or aim. */
+function applyPose(voxels: Voxel[], pose: Pose): Voxel[] {
+  const swing = pose.walk ?? 0;
+  if (!swing && !pose.reach && !pose.aim) return voxels;
+  const out = new Map<string, Voxel>();
+  for (const [x, y, z, c] of voxels) {
+    let [nx, ny, nz] = [x, y, z];
+    const left = x <= 9;
+    if (isArm(x, y, z)) {
+      const forward = pose.reach || (pose.aim && !left);
+      if (forward) {
+        // swing the arm up round the shoulder until it points straight ahead
+        ny = 44 + (z - 4);
+        nz = 4 + (47 - y);
+      } else if (swing) {
+        nz = z - Math.round((left ? swing : -swing) * (47 - y) * 0.25);
+      }
+    } else if (swing && isLeg(x, y)) {
+      nz = z + Math.round((left ? swing : -swing) * (25 - y) * 0.3);
+    }
+    out.set(`${nx},${ny},${nz}`, [nx, ny, nz, c]);
+  }
+  return [...out.values()];
 }
 
 /** Where the right hand closes, for holding things: the middle of the hand block. */
 export const HAND = { x: 17.5, y: 23, z: 6 } as const;
+/** The right hand when the aim pose holds the arm out in front. */
+export const HAND_AIM = { x: 17.5, y: 46, z: 29 } as const;

@@ -169,7 +169,19 @@ export interface RunState {
   over: boolean;
   won: boolean;
   bossDown: boolean;
-  player: { x: number; y: number; hp: number; maxHp: number; level: number; xp: number; next: number; face: number; aim: number; hurt: number };
+  player: {
+    x: number;
+    y: number;
+    hp: number;
+    maxHp: number;
+    level: number;
+    xp: number;
+    next: number;
+    face: number;
+    aim: number;
+    hurt: number;
+    aiming: boolean;
+  };
   levels: Partial<Record<UpgradeId, number>>;
   /** Upgrade choices waiting for the player; the world pauses while set. */
   choices: UpgradeId[] | null;
@@ -196,7 +208,19 @@ export function newRun(loadout: Loadout): RunState {
     over: false,
     won: false,
     bossDown: false,
-    player: { x: ARENA / 2, y: ARENA / 2, hp: loadout.perks.maxHp, maxHp: loadout.perks.maxHp, level: 1, xp: 0, next: 5, face: 0, aim: 0, hurt: 0 },
+    player: {
+      x: ARENA / 2,
+      y: ARENA / 2,
+      hp: loadout.perks.maxHp,
+      maxHp: loadout.perks.maxHp,
+      level: 1,
+      xp: 0,
+      next: 5,
+      face: Math.PI / 2,
+      aim: 0,
+      hurt: 0,
+      aiming: false,
+    },
     levels: {},
     choices: null,
     zombies: [],
@@ -356,6 +380,7 @@ export function step(s: RunState, l: Loadout, dt: number, input: { x: number; y:
       target = z;
     }
   }
+  p.aiming = !!target;
   if (target) p.aim = Math.atan2(target.y - p.y, target.x - p.x);
   if (target && s.cooldown <= 0) {
     s.cooldown = 1 / (w.rate * l.perks.fireRate * (1 + 0.15 * lv(s, 'rate')));

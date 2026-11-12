@@ -190,3 +190,50 @@ export function fitUnit(b: Bounds, pitchDeg: number, width: number, height: numb
   const h = (b.maxY - b.minY) * Math.cos(pitch) + b.radius * 2 * Math.sin(pitch);
   return Math.min((width * margin) / w, (height * margin) / h);
 }
+
+/**
+ * Joins neighbouring polygons that share a fill into one path. Draw order is kept, so the
+ * picture is identical; there are just far fewer svg elements (much faster on phones).
+ */
+export function mergeRuns(polys: Painted[]): Painted[] {
+  const out: Painted[] = [];
+  for (const p of polys) {
+    const last = out[out.length - 1];
+    if (last && last.fill === p.fill) last.d += p.d;
+    else out.push({ ...p });
+  }
+  return out;
+}
+
+export interface Sprite {
+  polys: Painted[];
+  /** Pixels from the sprite's origin up to the top of its bounding circle. */
+  height: number;
+}
+
+/**
+ * A projected model with its feet at (0, 0), for drawing many figures in one scene.
+ * `unit` is scene units per voxel.
+ */
+export function sprite(quads: Quad[], b: Bounds, yawDeg: number, pitchDeg: number, unit: number, muted = 0): Sprite {
+  const pitch = (pitchDeg * Math.PI) / 180;
+  const feet = (b.cy - b.minY) * Math.cos(pitch) * unit;
+  const polys = project(quads, b, yawDeg, pitchDeg, unit, 0, -2 * feet, muted);
+  return { polys: mergeRuns(polys), height: (b.maxY - b.minY) * Math.cos(pitch) * unit + b.radius * Math.sin(pitch) * unit };
+}
+
+/**
+ * One path per colour, ordered by each colour's average depth. Much cheaper than `mergeRuns`
+ * but can misorder overlapping parts slightly; meant for small figures drawn by the dozen.
+ */
+export function groupByFill(polys: Painted[]): Painted[] {
+  const groups = new Map<string, { d: string; sum: number; n: number }>();
+  polys.forEach((p, i) => {
+    const g = groups.get(p.fill) ?? { d: '', sum: 0, n: 0 };
+    g.d += p.d;
+    g.sum += i;
+    g.n++;
+    groups.set(p.fill, g);
+  });
+  return [...groups].sort((a, b) => a[1].sum / a[1].n - b[1].sum / b[1].n).map(([fill, g]) => ({ fill, d: g.d }));
+}
