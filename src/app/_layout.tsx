@@ -6,6 +6,8 @@ import * as SystemUI from 'expo-system-ui';
 import React, { useEffect } from 'react';
 
 import { DialogHost } from '@/components/Dialog';
+import { UIEventHost } from '@/components/UIEventHost';
+import { useCoreLifecycle } from '@/core/useCoreLifecycle';
 import { ToastHost } from '@/components/ToastHost';
 import { useHydrated } from '@/hooks/useHydrated';
 import { useLiveSync } from '@/live/useLiveSync';
@@ -24,6 +26,7 @@ function Shell({ ready }: { ready: boolean }) {
   const matchIcon = useGame((s) => s.data.matchIcon);
 
   useLiveSync(ready);
+  useCoreLifecycle(ready);
 
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(theme.colors.bg).catch(() => {});
@@ -47,6 +50,7 @@ function Shell({ ready }: { ready: boolean }) {
         }}
       />
       <ToastHost />
+      <UIEventHost />
       <DialogHost />
     </>
   );
