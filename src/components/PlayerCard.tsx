@@ -1,9 +1,13 @@
+import { useRouter } from 'expo-router';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+
+import { Avatar } from '@/avatar/Avatar';
 
 import { RANK_TITLES } from '@/game/leveling';
 import { useToday } from '@/hooks/useToday';
 import { useArcade } from '@/store/useArcade';
+import { useAvatar } from '@/store/useAvatar';
 import { useGame } from '@/store/useGame';
 import { useTheme } from '@/theme/ThemeProvider';
 
@@ -37,6 +41,9 @@ export function PlayerCard({ cardRef }: { cardRef?: React.Ref<CardRef> }) {
   const profile = useGame((s) => s.data.profile);
   const xp = useGame((s) => s.data.xp);
   const plus = useArcade((s) => s.data.plus);
+  const look = useAvatar((s) => s.look);
+  const made = useAvatar((s) => s.made);
+  const router = useRouter();
   const { level, rank, streak, done, quests } = useToday();
   // The handheld era only has four shades, so the picture gives up its colour there.
   const mono = id === 'pocket';
@@ -46,9 +53,13 @@ export function PlayerCard({ cardRef }: { cardRef?: React.Ref<CardRef> }) {
     <View ref={cardRef} collapsable={false}>
       <Panel>
         <View style={styles.top}>
-          <View style={[styles.avatar, { backgroundColor: mono ? colors.text : profile.color, borderRadius: shape.radius, borderColor: colors.panelBorder }]}>
-            <Icon name={profile.avatar} size={38} color={mono ? colors.bg : '#FFFFFF'} />
-          </View>
+          <Pressable
+            onPress={() => router.push('/avatar')}
+            accessibilityRole="button"
+            accessibilityLabel={made ? 'Edit your avatar' : 'Make an avatar'}
+            style={[styles.avatar, { backgroundColor: mono ? colors.text : profile.color, borderRadius: shape.radius, borderColor: colors.panelBorder }]}>
+            {made ? <Avatar look={look} size={62} uid="card" round={false} /> : <Icon name={profile.avatar} size={38} color={mono ? colors.bg : '#FFFFFF'} />}
+          </Pressable>
           <View style={styles.identity}>
             <Txt variant="title" numberOfLines={1} adjustsFontSizeToFit>
               {profile.name}
@@ -85,7 +96,7 @@ export function PlayerCard({ cardRef }: { cardRef?: React.Ref<CardRef> }) {
 
 const styles = StyleSheet.create({
   top: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  avatar: { width: 64, height: 64, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
+  avatar: { width: 64, height: 64, alignItems: 'center', justifyContent: 'center', borderWidth: 1, overflow: 'hidden' },
   identity: { flex: 1, gap: 2 },
   level: { marginTop: 14, gap: 6 },
   levelHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },

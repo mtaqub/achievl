@@ -1,13 +1,13 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { crateById } from '@/arcade/crates';
 import { crateOddsTable, FOIL_CHANCE, shardValue, Spin, wearGrade } from '@/arcade/rules';
 import { RARITY_COLOR } from '@/arcade/types';
 import { reveal } from '@/arcade/ui/feedback';
 import { Reel } from '@/arcade/ui/Reel';
-import { Weapon } from '@/arcade/ui/Weapon';
+import { hashText, Weapon } from '@/arcade/ui/Weapon';
 import { Btn } from '@/components/Btn';
 import { Chip, Divider, Segmented } from '@/components/controls';
 import { Panel } from '@/components/Panel';
@@ -101,9 +101,21 @@ export default function CrateScreen() {
       {landed && (
         <Panel title="You unboxed" icon="package-variant">
           <View style={styles.result}>
-            <View style={[styles.showcase, { borderColor: RARITY_COLOR[landed.item.rarity] }]}>
-              <Weapon item={landed.item} uid="result" width={230} />
-            </View>
+            <Pressable
+              style={[styles.showcase, { borderColor: RARITY_COLOR[landed.item.rarity] }]}
+              onPress={() => router.push({ pathname: '/inspect', params: { uid: landed.drop.uid } })}
+              accessibilityRole="button"
+              accessibilityLabel="Inspect in 3d">
+              <Weapon item={landed.item} uid="result" width={230} wear={landed.drop.wear} seed={hashText(landed.drop.uid)} />
+              <Txt variant="caption" size={10} color="#8A929C">
+                tap to inspect
+              </Txt>
+            </Pressable>
+            {!!landed.item.lore && (
+              <Txt variant="caption" color="dim" center>
+                {`“${landed.item.lore}”`}
+              </Txt>
+            )}
             <Txt variant="title" size={18} center color={landed.drop.foil ? '#FFB347' : 'text'}>
               {`${landed.drop.foil ? '★ ' : ''}${landed.item.weapon} | ${landed.item.finish}`}
             </Txt>
@@ -123,6 +135,13 @@ export default function CrateScreen() {
                   scrap([landed.drop.uid]);
                   setLanded(null);
                 }}
+              />
+              <Btn
+                label="Inspect"
+                icon="rotate-3d-variant"
+                variant="secondary"
+                style={styles.button}
+                onPress={() => router.push({ pathname: '/inspect', params: { uid: landed.drop.uid } })}
               />
               <Btn label="Keep" icon="check" style={styles.button} onPress={() => setLanded(null)} />
             </View>
@@ -171,7 +190,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   block: { gap: 12 },
   result: { gap: 12, alignItems: 'center' },
-  showcase: { alignSelf: 'stretch', alignItems: 'center', paddingVertical: 18, backgroundColor: '#1B1D22', borderBottomWidth: 4, borderRadius: 4 },
+  showcase: { alignSelf: 'stretch', alignItems: 'center', gap: 6, paddingVertical: 18, backgroundColor: '#1B1D22', borderBottomWidth: 4, borderRadius: 4 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center' },
   buttons: { flexDirection: 'row', gap: 10, alignSelf: 'stretch' },
   button: { flex: 1 },
