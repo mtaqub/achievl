@@ -2,56 +2,46 @@ import { useRouter } from 'expo-router';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import { PanResponder, Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Svg, { Circle, G, Path, Rect } from 'react-native-svg';
+import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 
 import { loadoutFor } from '@/arcade/loadout';
 import { reveal, thud, tick } from '@/arcade/ui/feedback';
-import { Weapon } from '@/arcade/ui/Weapon';
-import { Avatar } from '@/avatar/Avatar';
-import { AvatarLook } from '@/avatar/parts';
 import { Btn } from '@/components/Btn';
 import { Icon } from '@/components/Icon';
 import { Txt } from '@/components/Txt';
 import { useToday } from '@/hooks/useToday';
-import { ARENA, choose, Loadout, newRun, perksFrom, RUN_SECONDS, runReward, RunState, step, UPGRADES, weaponStats, Zombie } from '@/minigame/survivor';
+import { ARENA, choose, Loadout, newRun, perksFrom, RUN_SECONDS, runReward, RunState, step, UPGRADES, weaponStats, Zombie, ZOMBIES } from '@/minigame/survivor';
 import { useArcade } from '@/store/useArcade';
+import { forgetPlayerSprites, playerSprite, yawFor, zombieSprite } from '@/minigame/sprites';
 import { useAvatar } from '@/store/useAvatar';
+import type { Sprite } from '@/voxel/engine';
 import { useGame } from '@/store/useGame';
 
-const ZOMBIE_LOOK: Record<Zombie['kind'], { shirt: string; skin: string; scale: number }> = {
-  walker: { shirt: '#5A5048', skin: '#7FA06A', scale: 1 },
-  runner: { shirt: '#3E4A5A', skin: '#93A877', scale: 0.85 },
-  brute: { shirt: '#4A3A3A', skin: '#6E8C5A', scale: 1.5 },
-  boss: { shirt: '#2E2224', skin: '#5E7A4C', scale: 2.8 },
-};
+/** A cached voxel sprite; memoised so only its position changes from frame to frame. */
+const Shape = memo(function Shape({ sprite, opacity = 1 }: { sprite: Sprite; opacity?: number }) {
+  return (
+    <G opacity={opacity}>
+      {sprite.polys.map((poly, i) => (
+        <Path key={i} d={poly.d} fill={poly.fill} />
+      ))}
+    </G>
+  );
+});
 
-/** A blocky zombie seen from above and a little in front, arms out towards the player. */
-function ZombieSprite({ z, px, py }: { z: Zombie; px: number; py: number }) {
-  const look = ZOMBIE_LOOK[z.kind];
-  const s = look.scale * 10;
-  const a = Math.atan2(py - z.y, px - z.x);
-  const flash = z.flash > 0;
-  const lean = Math.sin(z.id + z.x * 0.05) * 0.6; // shamble
+function ZombieFigure({ z, px, py, t }: { z: Zombie; px: number; py: number; t: number }) {
+  const frame = Math.floor(t * 3 + z.id * 0.37) % 2;
+  const sprite = zombieSprite(z.kind, yawFor(Math.atan2(py - z.y, px - z.x)), frame);
+  const r = ZOMBIES[z.kind].radius;
   return (
     <G transform={`translate(${z.x} ${z.y})`}>
-      <Rect x={-s * 1.1} y={s * 0.9} width={s * 2.2} height={s * 0.5} fill="rgba(0,0,0,0.35)" />
-      <G transform={`rotate(${(a * 180) / Math.PI} 0 0)`}>
-        <Rect x={s * 0.4} y={-s * 0.75 + lean} width={s * 1.1} height={s * 0.4} fill={flash ? '#FFFFFF' : look.skin} />
-        <Rect x={s * 0.4} y={s * 0.35 - lean} width={s * 1.1} height={s * 0.4} fill={flash ? '#FFFFFF' : look.skin} />
-      </G>
-      <Rect x={-s * 0.8} y={-s * 0.6} width={s * 1.6} height={s * 1.5} fill={flash ? '#FFFFFF' : look.shirt} />
-      <Rect x={-s * 0.6} y={-s * 1.5} width={s * 1.2} height={s * 1.1} fill={flash ? '#FFFFFF' : look.skin} />
-      <Rect x={-s * 0.4} y={-s * 1.15} width={s * 0.25} height={s * 0.2} fill={z.kind === 'boss' ? '#FF3B3B' : '#E8E04B'} />
-      <Rect x={s * 0.15} y={-s * 1.15} width={s * 0.25} height={s * 0.2} fill={z.kind === 'boss' ? '#FF3B3B' : '#E8E04B'} />
-      {z.kind !== 'walker' && z.kind !== 'runner' && <Rect x={-s} y={-s * 2} width={(2 * s * Math.max(0, z.hp)) / z.maxHp} height={s * 0.18} fill="#E5534B" />}
+      <Ellipse cx={0} cy={0} rx={r * 0.9} ry={r * 0.45} fill="rgba(0,0,0,0.35)" />
+      <Shape sprite={sprite} opacity={z.flash > 0 ? 0.45 : 1} />
+      {(z.kind === 'brute' || z.kind === 'boss') && (
+        <Rect x={-r} y={-sprite.height - 6} width={(2 * r * Math.max(0, z.hp)) / z.maxHp} height={3} fill="#E5534B" />
+      )}
     </G>
   );
 }
-
-/** The player's figure, redrawn only when it turns to a new direction. */
-const PlayerSprite = memo(function PlayerSprite({ look, yaw }: { look: AvatarLook; yaw: number }) {
-  return <Avatar look={look} size={92} bare yaw={yaw} pitch={32} />;
-});
 
 const fmt = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 
@@ -81,6 +71,9 @@ export default function Survivor() {
     // eslint-disable-next-line react-hooks/immutability -- the game container is deliberately mutable; the loop reads the latest loadout
     game.loadout = loadout;
   }, [game, loadout]);
+
+  // cached player figures belong to this look and weapon; drop them when leaving
+  useEffect(() => forgetPlayerSprites, []);
 
   // the game loop
   useEffect(() => {
@@ -161,14 +154,10 @@ export default function Survivor() {
   const viewH = height / Z;
   const camX = Math.min(Math.max(p.x - viewW / 2, 0), ARENA - viewW);
   const camY = Math.min(Math.max(p.y - viewH / 2, 0), ARENA - viewH);
-  const sx = (p.x - camX) * Z;
-  const sy = (p.y - camY) * Z;
-  // face the way you walk: screen down is towards the viewer
-  const yaw = Math.round(((90 - (p.face * 180) / Math.PI) % 360) / 45) * 45;
+  // face the target while shooting, otherwise the way you walk
   const moving = Math.hypot(game.input.x, game.input.y) > 0.05 || game.keys.size > 0;
-  const bobY = moving ? Math.abs(Math.sin(s.t * 12)) * -4 : 0;
-  const aimDeg = (p.aim * 180) / Math.PI;
-  const flipped = Math.cos(p.aim) < 0;
+  const playerFigure = playerSprite(look, gear, yawFor(p.aiming ? p.aim : p.face), moving ? Math.floor(s.t * 8) % 4 : 0);
+  const blink = p.hurt > 0 && Math.floor(s.t * 20) % 2 === 1;
 
   const restart = () => {
     // eslint-disable-next-line react-hooks/immutability -- see the game container above
@@ -221,11 +210,21 @@ export default function Survivor() {
                   strokeDasharray="10 8"
                 />
               ))}
-            {s.zombies
-              .filter((z) => onScreen(z.x, z.y))
-              .map((z) => (
-                <ZombieSprite key={z.id} z={z} px={p.x} py={p.y} />
-              ))}
+            {/* figures are drawn back to front so nearer ones overlap */}
+            {[
+              ...s.zombies.filter((z) => onScreen(z.x, z.y)).map((z) => ({ y: z.y, el: <ZombieFigure key={z.id} z={z} px={p.x} py={p.y} t={s.t} /> })),
+              {
+                y: p.y,
+                el: (
+                  <G key="player" transform={`translate(${p.x} ${p.y})`}>
+                    <Ellipse cx={0} cy={0} rx={13} ry={6} fill="rgba(0,0,0,0.4)" />
+                    <Shape sprite={playerFigure} opacity={blink ? 0.4 : 1} />
+                  </G>
+                ),
+              },
+            ]
+              .sort((a, b) => a.y - b.y)
+              .map((a) => a.el)}
             {s.bullets.map((b) => (
               <Rect key={b.id} x={b.x - 3} y={b.y - 3} width={6} height={6} fill={gear.item.paint[0]} stroke={gear.item.paint[1]} strokeWidth={1} />
             ))}
@@ -269,16 +268,6 @@ export default function Survivor() {
             )}
           </G>
         </Svg>
-
-        {/* the player and their gun, as views over the svg */}
-        <View pointerEvents="none" style={[styles.player, { left: sx - 46, top: sy - 84 + bobY, opacity: p.hurt > 0 && Math.floor(s.t * 20) % 2 ? 0.4 : 1 }]}>
-          <PlayerSprite look={look} yaw={yaw} />
-        </View>
-        <View
-          pointerEvents="none"
-          style={[styles.gun, { left: sx - 6, top: sy - 28 + bobY, transform: [{ rotate: `${aimDeg}deg` }, { scaleY: flipped ? -1 : 1 }] }]}>
-          <Weapon item={gear.item} uid="run-gun" width={40} wear={gear.wear} seed={gear.seed} />
-        </View>
 
         {stick && (
           <View pointerEvents="none" style={[styles.stick, { left: stick.x - 50, top: stick.y - 50 }]}>
@@ -383,8 +372,6 @@ export default function Survivor() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#232528', overflow: 'hidden' },
   flex: { flex: 1 },
-  player: { position: 'absolute', width: 92, height: 92 },
-  gun: { position: 'absolute', width: 34, height: 15, transformOrigin: '6px 8px' },
   stick: {
     position: 'absolute',
     width: 100,

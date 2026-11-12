@@ -2,7 +2,7 @@ import { CrateItem, Drop } from './types';
 import { findCrateItem } from './rules';
 import { hashText, weaponVoxels } from './ui/Weapon';
 import type { Layer } from '@/voxel/engine';
-import { HAND } from '@/avatar/model';
+import { HAND, HAND_AIM } from '@/avatar/model';
 
 /** What the avatar carries when nothing is equipped. */
 export const STOCK: CrateItem = {
@@ -34,10 +34,11 @@ export function loadoutFor(inventory: Drop[], equipped: string | undefined): Loa
 const GRIP_AT: Record<CrateItem['shape'], number> = { pistol: 0.2, smg: 0.3, rifle: 0.4, sniper: 0.4, knife: 0.8, karambit: 0.56 };
 
 /** The weapon as a half-size layer in the avatar's right hand, pointing forward. */
-export function heldLayer(l: Loadout): Layer {
+export function heldLayer(l: Loadout, aim = false): Layer {
+  const hand = aim ? HAND_AIM : HAND;
   const melee = l.item.shape === 'knife' || l.item.shape === 'karambit';
   const grip = Math.round(GRIP_AT[l.item.shape] * 29);
   const g = melee ? 29 - grip : grip;
   const voxels = weaponVoxels(l.item, l.wear, l.seed).map(([c, y, z, col]) => [z, y, melee ? 29 - c : c, col] as [number, number, number, string]);
-  return { voxels, scale: 0.5, offset: [HAND.x - 0.5, HAND.y - 2, HAND.z - g * 0.5] };
+  return { voxels, scale: 0.5, offset: [hand.x - 0.5, hand.y - 2, hand.z - g * 0.5] };
 }
